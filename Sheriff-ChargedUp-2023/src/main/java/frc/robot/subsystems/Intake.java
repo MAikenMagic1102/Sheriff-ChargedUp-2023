@@ -11,12 +11,13 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
-  /** Creates a new Intake. */
-  private CANSparkMax leftIntake = new CANSparkMax(10, MotorType.kBrushless);
-  private CANSparkMax rightIntake = new CANSparkMax(11, MotorType.kBrushless);
+  private CANSparkMax leftIntake = new CANSparkMax(Constants.Intake.leftIntakeID, MotorType.kBrushless);
+  private CANSparkMax rightIntake = new CANSparkMax(Constants.Intake.rightIntakeID, MotorType.kBrushless);
 
   private SparkMaxPIDController PIDIntake1;
   private SparkMaxPIDController PIDIntake2;
@@ -25,6 +26,7 @@ public class Intake extends SubsystemBase {
   private RelativeEncoder intake2Enc;
 
   private boolean resetHoldPOS = false;
+  private boolean hasGamepiece = false;
 
   public Intake() {
     intake1Enc = leftIntake.getEncoder();
@@ -33,23 +35,25 @@ public class Intake extends SubsystemBase {
     PIDIntake1 = leftIntake.getPIDController();
     PIDIntake2 = rightIntake.getPIDController();
 
-    leftIntake.setSmartCurrentLimit(30);
-    rightIntake.setSmartCurrentLimit(30);
+    leftIntake.setSmartCurrentLimit(Constants.Intake.smartCurrentLimit);
+    rightIntake.setSmartCurrentLimit(Constants.Intake.smartCurrentLimit);
     leftIntake.setIdleMode(IdleMode.kBrake);
     rightIntake.setIdleMode(IdleMode.kBrake);
 
-    PIDIntake1.setP(0.05);
-    PIDIntake2.setP(0.05);
+    PIDIntake1.setP(Constants.Intake.positionkP);
+    PIDIntake2.setP(Constants.Intake.positionkP);
   }
 
   public void setholdPosition(){
     double leftPOS = 0;
     double rightPOS = 0;
+
       if(resetHoldPOS){
         leftPOS = intake1Enc.getPosition();
         rightPOS = intake2Enc.getPosition();
         resetHoldPOS = false;
       }
+
       PIDIntake1.setReference(leftPOS, ControlType.kPosition);
       PIDIntake2.setReference(rightPOS, ControlType.kPosition);
   }
@@ -60,8 +64,20 @@ public class Intake extends SubsystemBase {
     resetHoldPOS = true;
   }
 
+  public boolean getHasGamepiece(){
+    if((leftIntake.getAppliedOutput() > 0.1 && rightIntake.getAppliedOutput() > 0.1) && (intake1Enc.getVelocity() < 1 && intake2Enc.getVelocity() < 1)){
+      hasGamepiece = true;
+    }
+    if((leftIntake.getAppliedOutput() < 0 && rightIntake.getAppliedOutput() < 0)){
+      hasGamepiece = false;
+    }
+    
+    return hasGamepiece;
+  }  
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Has Gamepiece", getHasGamepiece());
   }
 }

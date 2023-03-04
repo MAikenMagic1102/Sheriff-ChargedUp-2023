@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.configs.TalonFXConfigurator;
@@ -15,8 +16,8 @@ import com.ctre.phoenixpro.hardware.TalonFX;
 
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
-  private final TalonFX lowerArm = new TalonFX(13, "rio");
-  private final TalonFX upperArm = new TalonFX(12, "rio");
+  private final TalonFX lowerArm = new TalonFX(Constants.Arm.lowerArmID, Constants.Arm.CANbus);
+  private final TalonFX upperArm = new TalonFX(Constants.Arm.upperArmID, Constants.Arm.CANbus);
   private DutyCycleOut lowerOutput = new DutyCycleOut(0);
   private DutyCycleOut upperOutput = new DutyCycleOut(0);
 
@@ -24,11 +25,11 @@ public class Arm extends SubsystemBase {
   TalonFXConfiguration upperConfig = new TalonFXConfiguration();
 
   private boolean FOCenabled = true;
-  private boolean OverrideBrakeNeutral = true;
+  private boolean BrakeMode = true;
 
   public Arm() {
-    lowerConfig.Feedback.SensorToMechanismRatio = 36.0 / 1;
-    upperConfig.Feedback.SensorToMechanismRatio = 9.0 / 1;
+    lowerConfig.Feedback.SensorToMechanismRatio = Constants.Arm.lowerArmRatio;
+    upperConfig.Feedback.SensorToMechanismRatio = Constants.Arm.upperArmRatio;
 
     var defaultConfig = new TalonFXConfiguration();
     TalonFXConfigurator lowerCfg = lowerArm.getConfigurator();
@@ -43,12 +44,12 @@ public class Arm extends SubsystemBase {
   }
 
   public void lowerArmOpenLoop(double demand){
-    lowerOutput = new DutyCycleOut(demand * 0.4, FOCenabled, OverrideBrakeNeutral);
+    lowerOutput = new DutyCycleOut(demand * 0.4, FOCenabled, BrakeMode);
     lowerArm.setControl(lowerOutput);
   }
 
   public void upperArmOpenLoop(double demand){
-    upperOutput = new DutyCycleOut(demand * 0.2, FOCenabled, OverrideBrakeNeutral);
+    upperOutput = new DutyCycleOut(demand * 0.2, FOCenabled, BrakeMode);
     upperArm.setControl(upperOutput);
   }
 
