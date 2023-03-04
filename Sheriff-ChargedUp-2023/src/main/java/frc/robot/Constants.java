@@ -14,11 +14,29 @@ public final class Constants {
     public static final double stickDeadband = 0.1;
     public static final int CANdleID = 31;
 
+    public static final class Arm {
+        public static final String CANbus = "rio";
+        public static final int lowerArmID = 12;
+        public static final int upperArmID = 13;
+
+        public static final double lowerArmRatio = (36.0 / 1);
+        public static final double upperArmRatio = (9.0 / 1);
+    }
+
+    public static final class Intake {
+        public static final int leftIntakeID = 10;
+        public static final int rightIntakeID = 11;
+
+        public static final int smartCurrentLimit = 30;
+
+        public static final double positionkP = 0.05;
+    }
+
     public static final class Swerve {
         public static final int pigeonID = 9;
         public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 
-        public static final String CANivore = "1102";// name of the canivore
+        public static final String CANbus = "1102";// name of the canivore
 
         public static final COTSFalconSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
             COTSFalconSwerveConstants.SDSMK4i(COTSFalconSwerveConstants.driveGearRatios.SDSMK4i_L2);

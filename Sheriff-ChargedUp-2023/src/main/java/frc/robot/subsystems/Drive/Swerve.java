@@ -25,7 +25,7 @@ public class Swerve extends SubsystemBase {
     public Field2d field;
 
     public Swerve() {
-        gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.Swerve.CANivore);
+        gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.Swerve.CANbus);
         gyro.configFactoryDefault();
         zeroGyro();
 
