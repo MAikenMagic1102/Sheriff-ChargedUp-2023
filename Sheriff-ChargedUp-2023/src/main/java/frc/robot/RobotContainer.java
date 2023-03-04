@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -28,7 +29,10 @@ public class RobotContainer {
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
     private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rotationAxis = 2;
+    private final int rotationAxis = XboxController.Axis.kRightX.value;
+
+    private final int lowerArmAxis = XboxController.Axis.kLeftY.value;
+    private final int upperArmAxis = XboxController.Axis.kRightY.value;
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
@@ -37,13 +41,13 @@ public class RobotContainer {
     /* Operator Buttons */
     private final JoystickButton intakeIn = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
 
-    private final JoystickButton intakeOut = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
-    // public static final int IncrementAnimButton = XboxController.Button.kRightBumper.value;
-    // public static final int DecrementAnimButton = XboxController.Button.kLeftBumper.value;
-    // public static final int BlockButton = XboxController.Button.kStart.value;
-    // public static final int MaxBrightnessAngle = 90;
-    // public static final int MidBrightnessAngle = 180;
-    // public static final int ZeroBrightnessAngle = 270;
+    private final JoystickButton intakeOut = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
+    public static final int IncrementAnimButton = XboxController.Button.kRightBumper.value;
+    public static final int DecrementAnimButton = XboxController.Button.kLeftBumper.value;
+    public static final int BlockButton = XboxController.Button.kStart.value;
+    public static final int MaxBrightnessAngle = 90;
+    public static final int MidBrightnessAngle = 180;
+    public static final int ZeroBrightnessAngle = 270;
     // public static final int VbatButton = XboxController.Button.kA.value;
     // public static final int V5Button = XboxController.Button.kB.value;
     // public static final int CurrentButton = XboxController.Button.kX.value;
@@ -68,7 +72,7 @@ public class RobotContainer {
             )
         );
 
-        arm.setDefaultCommand(new RunCommand(() -> arm.armsOpenLoop(operator.getRawAxis(0), operator.getRawAxis(1)), arm));
+        arm.setDefaultCommand(new RunCommand(() -> arm.armsOpenLoop(-1 * operator.getRawAxis(lowerArmAxis), -1 * operator.getRawAxis(upperArmAxis)), arm));
 
         intake.setDefaultCommand(new RunCommand(() -> intake.setholdPosition(), intake));
 
@@ -86,16 +90,16 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
 
-        intakeIn.whileTrue(new InstantCommand(() -> intake.setOpenLoop(0.6)));
-        intakeOut.whileTrue(new InstantCommand(() -> intake.setOpenLoop(-0.1)));
+        intakeIn.whileTrue(new RepeatCommand(new InstantCommand(() -> intake.intakeIn())));
+        intakeOut.whileTrue(new RepeatCommand(new InstantCommand(() -> intake.intakeOut())));
 
-        // new JoystickButton(driver, BlockButton).whenPressed(m_candleSubsystem::setColors, m_candleSubsystem);
-        // new JoystickButton(driver, IncrementAnimButton).whenPressed(m_candleSubsystem::incrementAnimation, m_candleSubsystem);
-        // new JoystickButton(driver, DecrementAnimButton).whenPressed(m_candleSubsystem::decrementAnimation, m_candleSubsystem);
+        new JoystickButton(driver, BlockButton).whenPressed(m_candleSubsystem::setColors, m_candleSubsystem);
+        new JoystickButton(driver, IncrementAnimButton).whenPressed(m_candleSubsystem::incrementAnimation, m_candleSubsystem);
+        new JoystickButton(driver, DecrementAnimButton).whenPressed(m_candleSubsystem::decrementAnimation, m_candleSubsystem);
     
-        // new POVButton(driver, MaxBrightnessAngle).whenPressed(new CANdleConfigCommands.ConfigBrightness(m_candleSubsystem, 1.0));
-        // new POVButton(driver, MidBrightnessAngle).whenPressed(new CANdleConfigCommands.ConfigBrightness(m_candleSubsystem, 0.3));
-        // new POVButton(driver, ZeroBrightnessAngle).whenPressed(new CANdleConfigCommands.ConfigBrightness(m_candleSubsystem, 0));
+        new POVButton(driver, MaxBrightnessAngle).whenPressed(new CANdleConfigCommands.ConfigBrightness(m_candleSubsystem, 1.0));
+        new POVButton(driver, MidBrightnessAngle).whenPressed(new CANdleConfigCommands.ConfigBrightness(m_candleSubsystem, 0.3));
+        new POVButton(driver, ZeroBrightnessAngle).whenPressed(new CANdleConfigCommands.ConfigBrightness(m_candleSubsystem, 0));
     }
 
     /**

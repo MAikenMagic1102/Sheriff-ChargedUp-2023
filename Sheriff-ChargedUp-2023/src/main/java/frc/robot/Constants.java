@@ -16,18 +16,18 @@ public final class Constants {
 
     public static final class Arm {
         public static final String CANbus = "rio";
-        public static final int lowerArmID = 12;
-        public static final int upperArmID = 13;
+        public static final int lowerArmID = 13;
+        public static final int upperArmID = 12;
 
-        public static final double lowerArmRatio = (36.0 / 1);
-        public static final double upperArmRatio = (9.0 / 1);
+        public static final double lowerArmRatio = (36.0 / 1.0);
+        public static final double upperArmRatio = (9.0 / 1.0);
     }
 
     public static final class Intake {
-        public static final int leftIntakeID = 10;
-        public static final int rightIntakeID = 11;
+        public static final int leftIntakeID = 11;
+        public static final int rightIntakeID = 10;
 
-        public static final int smartCurrentLimit = 30;
+        public static final int smartCurrentLimit = 20;
 
         public static final double positionkP = 0.05;
     }

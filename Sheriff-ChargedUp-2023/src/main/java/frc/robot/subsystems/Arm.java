@@ -13,6 +13,7 @@ import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.configs.TalonFXConfigurator;
 import com.ctre.phoenixpro.controls.DutyCycleOut;
 import com.ctre.phoenixpro.hardware.TalonFX;
+import com.ctre.phoenixpro.signals.InvertedValue;
 
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
@@ -29,7 +30,18 @@ public class Arm extends SubsystemBase {
 
   public Arm() {
     lowerConfig.Feedback.SensorToMechanismRatio = Constants.Arm.lowerArmRatio;
+    lowerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    lowerConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    lowerConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 3;
+    lowerConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    lowerConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.01;
+
     upperConfig.Feedback.SensorToMechanismRatio = Constants.Arm.upperArmRatio;
+    upperConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    upperConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    upperConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 4.8;
+    upperConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    upperConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.01;
 
     var defaultConfig = new TalonFXConfiguration();
     TalonFXConfigurator lowerCfg = lowerArm.getConfigurator();
@@ -39,8 +51,11 @@ public class Arm extends SubsystemBase {
     upperCfg.apply(defaultConfig);
     Timer.delay(0.5);
     
-    upperCfg.apply(lowerConfig);
-    lowerCfg.apply(upperConfig);
+    upperCfg.apply(upperConfig);
+    lowerCfg.apply(lowerConfig);
+
+    lowerArm.setRotorPosition(0);
+    upperArm.setRotorPosition(0);
   }
 
   public void lowerArmOpenLoop(double demand){

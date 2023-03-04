@@ -28,6 +28,12 @@ public class Intake extends SubsystemBase {
   private boolean resetHoldPOS = false;
   private boolean hasGamepiece = false;
 
+  double leftPOS = 0;
+  double rightPOS = 0;
+
+  boolean keepHold;
+
+
   public Intake() {
     intake1Enc = leftIntake.getEncoder();
     intake2Enc = rightIntake.getEncoder();
@@ -37,6 +43,10 @@ public class Intake extends SubsystemBase {
 
     leftIntake.setSmartCurrentLimit(Constants.Intake.smartCurrentLimit);
     rightIntake.setSmartCurrentLimit(Constants.Intake.smartCurrentLimit);
+
+    leftIntake.setInverted(true);
+    rightIntake.setInverted(false);
+
     leftIntake.setIdleMode(IdleMode.kBrake);
     rightIntake.setIdleMode(IdleMode.kBrake);
 
@@ -45,23 +55,25 @@ public class Intake extends SubsystemBase {
   }
 
   public void setholdPosition(){
-    double leftPOS = 0;
-    double rightPOS = 0;
-
-      if(resetHoldPOS){
-        leftPOS = intake1Enc.getPosition();
-        rightPOS = intake2Enc.getPosition();
-        resetHoldPOS = false;
-      }
-
-      PIDIntake1.setReference(leftPOS, ControlType.kPosition);
-      PIDIntake2.setReference(rightPOS, ControlType.kPosition);
+    if(keepHold){
+      PIDIntake1.setReference(0.6, ControlType.kDutyCycle);
+      PIDIntake2.setReference(0.6, ControlType.kDutyCycle);
+    }else{
+      PIDIntake1.setReference(0.0, ControlType.kDutyCycle);
+      PIDIntake2.setReference(0.0, ControlType.kDutyCycle);
+    }
   }
 
-  public void setOpenLoop(double output){
-    PIDIntake1.setReference(output, ControlType.kDutyCycle);
-    PIDIntake2.setReference(output, ControlType.kDutyCycle);
-    resetHoldPOS = true;
+  public void intakeIn(){
+    PIDIntake1.setReference(0.6, ControlType.kDutyCycle);
+    PIDIntake2.setReference(0.6, ControlType.kDutyCycle);
+    keepHold = true;
+  }
+
+  public void intakeOut(){
+    PIDIntake1.setReference(-0.1, ControlType.kDutyCycle);
+    PIDIntake2.setReference(-0.1, ControlType.kDutyCycle);
+    keepHold = false;
   }
 
   public boolean getHasGamepiece(){
@@ -78,6 +90,14 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Intake1 Target", leftPOS);
+    SmartDashboard.putNumber("Intake2 Target", rightPOS);
+    SmartDashboard.putNumber("Intake1 Error", intake1Enc.getPosition() - leftPOS);
+    SmartDashboard.putNumber("Intake2 Error", intake2Enc.getPosition() - rightPOS);
+    SmartDashboard.putNumber("Intake1 Pos", intake1Enc.getPosition());
+    SmartDashboard.putNumber("Intake2 Pos", intake2Enc.getPosition());
+    SmartDashboard.putNumber("Intake1 Velocity", intake1Enc.getVelocity());
+    SmartDashboard.putNumber("Intake2 Velocity", intake2Enc.getVelocity());
     SmartDashboard.putBoolean("Has Gamepiece", getHasGamepiece());
   }
 }
