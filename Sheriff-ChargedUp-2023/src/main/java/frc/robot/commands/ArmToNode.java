@@ -41,7 +41,7 @@ public class ArmToNode extends CommandBase {
     System.out.println(node.gamePiece);
     System.out.println("ArmMap is empty?: " + Constants.Arm.ArmMap.isEmpty());
     System.out.println(Constants.Arm.ArmMap.containsKey(new Node(level, GamePiece.getGamePiece().ordinal())));
-    System.out.println(Constants.Arm.ArmMap.get(new Node(level, GamePiece.getGamePiece().ordinal())));
+    System.out.println(Constants.Arm.ArmMap.get(new Node(level, GamePiece.getGamePiece().ordinal())).lowerArmSetpoint);
     // var setpoint = 
     // lowerArmSetpoint = setpoint.lowerArmSetpoint;
     // upperArmSetpoint = setpoint.upperArmSetpoint;
