@@ -1,5 +1,8 @@
 package frc.robot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -7,12 +10,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import frc.lib.util.Node;
 import frc.lib.util.COTSFalconSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
+import frc.robot.subsystems.Arm.ArmSetpoint;
+import frc.lib.util.Gains;
 
 public final class Constants {
     public static final double stickDeadband = 0.1;
     public static final int CANdleID = 31;
+    public static final boolean tuningMode = true;
 
     public static final class Arm {
         public static final String CANbus = "rio";
@@ -21,6 +28,22 @@ public final class Constants {
 
         public static final double lowerArmRatio = (36.0 / 1.0);
         public static final double upperArmRatio = (9.0 / 1.0);
+
+        public static Map<Node, ArmSetpoint> ArmMap = new HashMap<Node, ArmSetpoint>();
+        static {
+            ArmMap.put(new Node(1, 1), new ArmSetpoint(0.0, 0.0));
+            ArmMap.put(new Node(2, 1), new ArmSetpoint(0.0, 0.0));
+            ArmMap.put(new Node(3, 1), new ArmSetpoint(2.2, 4.8));
+            ArmMap.put(new Node(1, 2), new ArmSetpoint(0.0, 0.0));
+            ArmMap.put(new Node(2, 2), new ArmSetpoint(0.0, 0.0));
+            ArmMap.put(new Node(3, 2), new ArmSetpoint(0.0, 0.0));
+        }
+
+        public static final double RETRACT = 0.1;
+        public static final ArmSetpoint STOW = new ArmSetpoint(0.2, 0.02); 
+        public static final ArmSetpoint FLOORLOAD = new ArmSetpoint(0.8, 2.2); 
+        public static final ArmSetpoint SUBSTATION = new ArmSetpoint(2.5, 0.1);  
+
     }
 
     public static final class Intake {
@@ -149,6 +172,13 @@ public final class Constants {
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
+
+        public static final Gains GAINS_ANGLE_SNAP = new Gains(0.02, 0.0, 0.0, 0.0, 50);
+    
+        public static final Gains GAINS_BALANCE = new Gains(0.045, 0.0, 0.0, 0.0, 50);
+    
+        public static final double SNAP_TOLLERANCE = 2.0;
+        public static final double BALANCE_TOLLERANCE = 0.001;
     }
 
     public static final class AutoConstants { //TODO: The below constants are used in the example auto, and must be tuned to specific robot
