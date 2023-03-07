@@ -67,18 +67,18 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         s_Swerve.setDefaultCommand(
-            new TeleopSwerve(
+            new TeleopSwerveWin(
                 s_Swerve, 
                 () -> -driver.getRawAxis(translationAxis), 
                 () -> -driver.getRawAxis(strafeAxis), 
                 () -> -driver.getRawAxis(rotationAxis), 
-                () -> robotCentric.getAsBoolean()
-                // driver.leftBumper(),
-                // driver.rightBumper(),
-                // driver.y(),
-                // driver.b(),
-                // driver.a(),
-                // driver.x()
+                () -> robotCentric.getAsBoolean(),
+                driver.leftBumper(),
+                driver.rightBumper(),
+                driver.y(),
+                driver.b(),
+                driver.a(),
+                driver.x()
             )
         );
 
@@ -133,6 +133,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new exampleAuto(s_Swerve);
+        return new exampleAuto(s_Swerve, arm, intake);
     }
 }

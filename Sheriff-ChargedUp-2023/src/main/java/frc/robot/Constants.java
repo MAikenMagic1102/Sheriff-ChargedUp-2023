@@ -30,19 +30,19 @@ public final class Constants {
         public static final double upperArmRatio = (9.0 / 1.0);
 
         public static Map<Node, ArmSetpoint> ArmMap = new HashMap<Node, ArmSetpoint>();
-        static {
-            ArmMap.put(new Node(1, 1), new ArmSetpoint(0.0, 0.0));
-            ArmMap.put(new Node(2, 1), new ArmSetpoint(0.0, 0.0));
-            ArmMap.put(new Node(3, 1), new ArmSetpoint(2.2, 4.8));
-            ArmMap.put(new Node(1, 2), new ArmSetpoint(0.0, 0.0));
-            ArmMap.put(new Node(2, 2), new ArmSetpoint(0.0, 0.0));
-            ArmMap.put(new Node(3, 2), new ArmSetpoint(0.0, 0.0));
+        static { //Gamepiece 1 is Cone, Gamepiece 2 is Cube
+            ArmMap.put(new Node(1, 1), new ArmSetpoint(0.7, 0.2));
+            ArmMap.put(new Node(2, 1), new ArmSetpoint(2.45, 1.45));
+            ArmMap.put(new Node(3, 1), new ArmSetpoint(2.9, 4.8));
+            ArmMap.put(new Node(1, 2), new ArmSetpoint(0.7, 0.2));
+            ArmMap.put(new Node(2, 2), new ArmSetpoint(2.25, 1.45));
+            ArmMap.put(new Node(3, 2), new ArmSetpoint(2.7, 4.8));
         }
 
         public static final double RETRACT = 0.1;
-        public static final ArmSetpoint STOW = new ArmSetpoint(0.2, 0.02); 
+        public static final ArmSetpoint STOW = new ArmSetpoint(0.62, 0.1); 
         public static final ArmSetpoint FLOORLOAD = new ArmSetpoint(0.8, 2.2); 
-        public static final ArmSetpoint SUBSTATION = new ArmSetpoint(2.5, 0.1);  
+        public static final ArmSetpoint SUBSTATION = new ArmSetpoint(2.45, 0.1);  
 
     }
 
@@ -50,7 +50,7 @@ public final class Constants {
         public static final int leftIntakeID = 11;
         public static final int rightIntakeID = 10;
 
-        public static final int smartCurrentLimit = 20;
+        public static final int smartCurrentLimit = 25;
 
         public static final double positionkP = 0.05;
     }

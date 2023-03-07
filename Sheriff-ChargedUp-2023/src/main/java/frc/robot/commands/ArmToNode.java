@@ -35,17 +35,13 @@ public class ArmToNode extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("Gamepiece: " + GamePiece.getGamePiece().ordinal());
-    var node = new Node(level, GamePiece.getGamePiece().ordinal());
-    System.out.println(node.level);
-    System.out.println(node.gamePiece);
-    System.out.println("ArmMap is empty?: " + Constants.Arm.ArmMap.isEmpty());
-    System.out.println(Constants.Arm.ArmMap.containsKey(new Node(level, GamePiece.getGamePiece().ordinal())));
-    System.out.println(Constants.Arm.ArmMap.get(new Node(level, GamePiece.getGamePiece().ordinal())).lowerArmSetpoint);
-    // var setpoint = 
-    // lowerArmSetpoint = setpoint.lowerArmSetpoint;
-    // upperArmSetpoint = setpoint.upperArmSetpoint;
+    var setpoint = Constants.Arm.ArmMap.get(new Node(level, GamePiece.getGamePiece().ordinal()));
+    lowerArmSetpoint = setpoint.lowerArmSetpoint;
+    //System.out.println("Lower Arm setpoint is : " + lowerArmSetpoint);
+    upperArmSetpoint = setpoint.upperArmSetpoint;
+    //System.out.println("Upper Arm setpoint is : " + upperArmSetpoint);
     isFirstRun = true;
+    isFinished = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -53,19 +49,24 @@ public class ArmToNode extends CommandBase {
   public void execute() {
     if(isFirstRun){
       m_Arm.setUpperArmSetPoint(Constants.Arm.RETRACT);
+      //System.out.println("Upper Arm is set to : " + Constants.Arm.RETRACT);
       isFirstRun = false;
+      //System.out.println("IsFirstRun: " + isFirstRun);
     }
+
 
     if(Math.abs(Constants.Arm.RETRACT - m_Arm.getUpperArmPosition()) < 0.3){
       m_Arm.setLowerArmSetPoint(lowerArmSetpoint);
+      //System.out.println("Lower Arm is set to : " + lowerArmSetpoint);
     }
-  
 
     if(Math.abs(lowerArmSetpoint - m_Arm.getLowerArmPosition()) < 0.3){
       m_Arm.setUpperArmSetPoint(upperArmSetpoint);
+      //System.out.println("Upper Arm is set to : " + upperArmSetpoint);
     }
 
-    if(Math.abs(upperArmSetpoint - m_Arm.getUpperArmPosition()) < 0.3 && Math.abs(lowerArmSetpoint - m_Arm.getLowerArmPosition()) < 0.3){
+    if((Math.abs(upperArmSetpoint - m_Arm.getUpperArmPosition()) < 0.3) && (Math.abs(lowerArmSetpoint - m_Arm.getLowerArmPosition()) < 0.3)){
+      //System.out.println("Complete Exiting Command");
       isFinished = true;
     }  
 
@@ -73,7 +74,9 @@ public class ArmToNode extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    isFinished = true;
+  }
 
   // Returns true when the command should end.
   @Override

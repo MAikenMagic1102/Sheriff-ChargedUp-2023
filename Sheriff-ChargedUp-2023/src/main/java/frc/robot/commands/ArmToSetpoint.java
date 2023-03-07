@@ -37,11 +37,11 @@ public class ArmToSetpoint extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("init");
-    System.out.println("Upper Setpoint" + upperArmSetpoint);
-    System.out.println("Lower Setpoint" + lowerArmSetpoint);
+    //System.out.println("init");
+    //System.out.println("Upper Setpoint" + upperArmSetpoint);
+    //System.out.println("Lower Setpoint" + lowerArmSetpoint);
     isFirstRun = true;
-    System.out.println("IsFirstRun: " + isFirstRun);
+    //System.out.println("IsFirstRun: " + isFirstRun);
     isFinished = false;
   }
 
@@ -50,25 +50,25 @@ public class ArmToSetpoint extends CommandBase {
   public void execute() {
     if(isFirstRun){
       m_Arm.setUpperArmSetPoint(Constants.Arm.RETRACT);
-      System.out.println("Upper Arm is set to : " + Constants.Arm.RETRACT);
+      //System.out.println("Upper Arm is set to : " + Constants.Arm.RETRACT);
       isFirstRun = false;
-      System.out.println("IsFirstRun: " + isFirstRun);
+      //System.out.println("IsFirstRun: " + isFirstRun);
     }
 
 
     if(Math.abs(Constants.Arm.RETRACT - m_Arm.getUpperArmPosition()) < 0.3){
       m_Arm.setLowerArmSetPoint(lowerArmSetpoint);
-      System.out.println("Lower Arm is set to : " + lowerArmSetpoint);
+      //System.out.println("Lower Arm is set to : " + lowerArmSetpoint);
     }
 
     if(Math.abs(lowerArmSetpoint - m_Arm.getLowerArmPosition()) < 0.3){
       m_Arm.setUpperArmSetPoint(upperArmSetpoint);
-      System.out.println("Upper Arm is set to : " + upperArmSetpoint);
+      //System.out.println("Upper Arm is set to : " + upperArmSetpoint);
     }
 
 
-      if(Math.abs(upperArmSetpoint - m_Arm.getUpperArmPosition()) < 0.3 && (Math.abs(lowerArmSetpoint - m_Arm.getLowerArmPosition()) < 0.3)){
-        System.out.println("Complete Exiting Command");
+    if((Math.abs(upperArmSetpoint - m_Arm.getUpperArmPosition()) < 0.3) && (Math.abs(lowerArmSetpoint - m_Arm.getLowerArmPosition()) < 0.3)){
+        //System.out.println("Complete Exiting Command");
         isFinished = true;
       }  
   }

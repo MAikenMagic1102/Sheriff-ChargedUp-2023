@@ -1,9 +1,16 @@
 package frc.robot.autos;
 
 import frc.robot.Constants;
+import frc.robot.commands.ArmToNode;
+import frc.robot.commands.ArmToSetpoint;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Drive.Swerve;
 
 import java.util.List;
+
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -14,48 +21,27 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class exampleAuto extends SequentialCommandGroup {
-    public exampleAuto(Swerve s_Swerve){
-        TrajectoryConfig config =
-            new TrajectoryConfig(
-                    Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-                    Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-                .setKinematics(Constants.Swerve.swerveKinematics);
-
-        // An example trajectory to follow.  All units in meters.
-        Trajectory exampleTrajectory =
-            TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0, 0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(3, 0, new Rotation2d(0)),
-                config);
-
-        var thetaController =
-            new ProfiledPIDController(
-                Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
-        thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-        SwerveControllerCommand swerveControllerCommand =
-            new SwerveControllerCommand(
-                exampleTrajectory,
-                s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
-                new PIDController(Constants.AutoConstants.kPXController, 0, 0),
-                new PIDController(Constants.AutoConstants.kPYController, 0, 0),
-                thetaController,
-                s_Swerve::setModuleStates,
-                s_Swerve);
-
-
-        addCommands(
-            new InstantCommand(() -> s_Swerve.resetOdometry(exampleTrajectory.getInitialPose())),
-            swerveControllerCommand
-        );
+    public exampleAuto(Swerve s_Swerve, Arm a_Arm, Intake i_Intake){
+        PathPlannerTrajectory test = PathPlanner.loadPath("1102Test", 2.0, 2.0);
+        PathPlannerTrajectory test2 = PathPlanner.loadPath("1102TestReturn", 2.0, 2.0);
+            addRequirements(s_Swerve, a_Arm, i_Intake);
+            addCommands(
+                new ParallelCommandGroup(
+                    new SequentialCommandGroup(
+                        new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD),
+                        new InstantCommand(() -> i_Intake.intakeIn()),
+                        s_Swerve.followTrajectoryCommand(test, true),
+                        s_Swerve.followTrajectoryCommand(test2, false).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.STOW)),
+                        new ArmToNode(a_Arm, 3),
+                        new InstantCommand(() -> i_Intake.intakeOut())
+                    ))
+    
+            );
     }
 }

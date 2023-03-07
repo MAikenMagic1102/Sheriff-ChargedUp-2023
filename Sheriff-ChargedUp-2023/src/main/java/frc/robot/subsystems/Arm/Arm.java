@@ -15,6 +15,7 @@ import com.ctre.phoenixpro.controls.DutyCycleOut;
 import com.ctre.phoenixpro.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.InvertedValue;
+import com.ctre.phoenixpro.signals.NeutralModeValue;
 
 import frc.lib.util.GamePiece;
 import frc.lib.util.GamePiece.GamePieceType;
@@ -47,31 +48,35 @@ public class Arm extends SubsystemBase {
     lowerConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 3;
     lowerConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     lowerConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.01;
+    lowerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    lowerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.06;
+
 
     //From Lower to Higher
-    lowerConfig.Slot0.kP = 80; // An error of 1 rotation = 80 amps
-    lowerConfig.Slot0.kI = 30;
-    lowerConfig.Slot0.kD = 25; // A change of 1 rotation per second results in 2 amps output
+    lowerConfig.Slot0.kP = 200; // An error of 1 rotation = 200 amps
+    lowerConfig.Slot0.kI = 80; //
+    lowerConfig.Slot0.kD = 40; // A change of 1 rotation per second results in 40 amps output
 
-    // Peak output of 130 amps
-    lowerConfig.TorqueCurrent.PeakForwardTorqueCurrent = 130;
-    lowerConfig.TorqueCurrent.PeakReverseTorqueCurrent = 130;
-
+    // Peak output of 250 amps
+    lowerConfig.TorqueCurrent.PeakForwardTorqueCurrent = 250;
+    lowerConfig.TorqueCurrent.PeakReverseTorqueCurrent = 250;
 
     upperConfig.Feedback.SensorToMechanismRatio = Constants.Arm.upperArmRatio;
     upperConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     upperConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     upperConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 4.8;
+    lowerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    lowerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.06;
 
     //From Lower to Higher
-    upperConfig.Slot0.kP = 60; // An error of 1 rotation = 80 amps
-    upperConfig.Slot0.kI = 10;
-    upperConfig.Slot0.kD = 7; // A change of 1 rotation per second results in 2 amps output
+    upperConfig.Slot0.kP = 200; // An error of 1 rotation = 80 amps
+    upperConfig.Slot0.kI = 80;
+    upperConfig.Slot0.kD = 40; // A change of 1 rotation per second results in 2 amps output
 
 
     // Peak output of 130 amps
-    upperConfig.TorqueCurrent.PeakForwardTorqueCurrent = 130;
-    upperConfig.TorqueCurrent.PeakReverseTorqueCurrent = 130;
+    upperConfig.TorqueCurrent.PeakForwardTorqueCurrent = 250;
+    upperConfig.TorqueCurrent.PeakReverseTorqueCurrent = 250;
 
     var defaultConfig = new TalonFXConfiguration();
     TalonFXConfigurator lowerCfg = lowerArm.getConfigurator();
@@ -86,6 +91,8 @@ public class Arm extends SubsystemBase {
 
     lowerArm.setRotorPosition(0);
     upperArm.setRotorPosition(0);
+
+    GamePiece.toggleGamePiece();
   }
 
   public void initArm(){
