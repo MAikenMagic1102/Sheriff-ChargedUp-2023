@@ -107,12 +107,13 @@ public class RobotContainer {
 
         operator.start().onTrue(new InstantCommand(() -> GamePiece.toggleGamePiece()));
 
-        operator.povUp().onTrue(new ArmToSetpoint(arm, Constants.Arm.SUBSTATION));
+        operator.povUp().onTrue(new ArmToSetpoint(arm, Constants.Arm.SUBSTATION).alongWith(new InstantCommand(() -> intake.intakeIn())));
         operator.povDown().onTrue(new ArmToSetpoint(arm, Constants.Arm.STOW));
-        operator.a().onTrue(new ArmToSetpoint(arm, Constants.Arm.FLOORLOAD));
-        operator.x().onTrue(new ArmToNode(arm, 1));
-        operator.y().onTrue(new ArmToNode(arm, 2));
-        operator.b().onTrue(new ArmToNode(arm, 3));
+
+        operator.a().onTrue(new ArmToNode(arm, 1));
+        operator.b().onTrue(new ArmToNode(arm, 2));
+        operator.y().onTrue(new ArmToNode(arm, 3));
+        operator.rightTrigger().onTrue(new ArmToSetpoint(arm, Constants.Arm.FLOORLOAD).alongWith(new InstantCommand(() -> intake.intakeIn())));
 
         intakeIn.whileTrue(new RepeatCommand(new InstantCommand(() -> intake.intakeIn())));
         intakeOut.whileTrue(new RepeatCommand(new InstantCommand(() -> intake.intakeOut())));
