@@ -28,10 +28,10 @@ public class Intake extends SubsystemBase {
   private boolean resetHoldPOS = false;
   private boolean hasGamepiece = false;
 
-  double leftPOS = 0;
-  double rightPOS = 0;
+  private double leftPOS = 0;
+  private double rightPOS = 0;
 
-  boolean keepHold;
+  private boolean keepHold;
 
 
   public Intake() {
@@ -76,11 +76,16 @@ public class Intake extends SubsystemBase {
     keepHold = false;
   }
 
+  public void intakeOutFast(){
+    PIDIntake1.setReference(-0.6, ControlType.kDutyCycle);
+    PIDIntake2.setReference(-0.6, ControlType.kDutyCycle);
+    keepHold = false;
+  }
+
   public boolean getHasGamepiece(){
-    if((leftIntake.getAppliedOutput() > 0.1 && rightIntake.getAppliedOutput() > 0.1) && (intake1Enc.getVelocity() < 1 && intake2Enc.getVelocity() < 1)){
+    if(keepHold && (intake1Enc.getVelocity() < 3 && intake2Enc.getVelocity() < 3)){
       hasGamepiece = true;
-    }
-    if((leftIntake.getAppliedOutput() < 0 && rightIntake.getAppliedOutput() < 0)){
+    }else{
       hasGamepiece = false;
     }
     
@@ -90,14 +95,14 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Intake1 Target", leftPOS);
-    SmartDashboard.putNumber("Intake2 Target", rightPOS);
-    SmartDashboard.putNumber("Intake1 Error", intake1Enc.getPosition() - leftPOS);
-    SmartDashboard.putNumber("Intake2 Error", intake2Enc.getPosition() - rightPOS);
-    SmartDashboard.putNumber("Intake1 Pos", intake1Enc.getPosition());
-    SmartDashboard.putNumber("Intake2 Pos", intake2Enc.getPosition());
-    SmartDashboard.putNumber("Intake1 Velocity", intake1Enc.getVelocity());
-    SmartDashboard.putNumber("Intake2 Velocity", intake2Enc.getVelocity());
+    // SmartDashboard.putNumber("Intake1 Target", leftPOS);
+    // SmartDashboard.putNumber("Intake2 Target", rightPOS);
+    // SmartDashboard.putNumber("Intake1 Error", intake1Enc.getPosition() - leftPOS);
+    // SmartDashboard.putNumber("Intake2 Error", intake2Enc.getPosition() - rightPOS);
+    // SmartDashboard.putNumber("Intake1 Pos", intake1Enc.getPosition());
+    // SmartDashboard.putNumber("Intake2 Pos", intake2Enc.getPosition());
+    // SmartDashboard.putNumber("Intake1 Velocity", intake1Enc.getVelocity());
+    // SmartDashboard.putNumber("Intake2 Velocity", intake2Enc.getVelocity());
     SmartDashboard.putBoolean("Has Gamepiece", getHasGamepiece());
   }
 }

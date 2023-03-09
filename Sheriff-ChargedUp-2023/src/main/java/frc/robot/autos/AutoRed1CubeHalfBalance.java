@@ -32,12 +32,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-public class exampleAuto extends SequentialCommandGroup {
-    public exampleAuto(Swerve s_Swerve, Arm a_Arm, Intake i_Intake){
+public class AutoRed1CubeHalfBalance extends SequentialCommandGroup {
+    public AutoRed1CubeHalfBalance(Swerve s_Swerve, Arm a_Arm, Intake i_Intake){
         PathPlannerTrajectory test = PathPlanner.loadPath("1102TestRed", 5.0, 3.0);
         PathPlannerTrajectory testAq = PathPlanner.loadPath("1102TestAquireGamepiece", 2.0, 1.5);
-        PathPlannerTrajectory test2 = PathPlanner.loadPath("1102TestReturn", 5.0, 3.0);
-        PathPlannerTrajectory test3 = PathPlanner.loadPath("1102TestReturnBridge", 2.0, 1.5);
+        PathPlannerTrajectory test2 = PathPlanner.loadPath("1102TestReturnBalance", 1.5, 1.5);
         
             addRequirements(s_Swerve, a_Arm, i_Intake);
             addCommands(
@@ -46,11 +45,7 @@ public class exampleAuto extends SequentialCommandGroup {
                         s_Swerve.followTrajectoryCommand(test, true).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD).alongWith(new InstantCommand(() -> i_Intake.intakeIn()))),
                         s_Swerve.followTrajectoryCommand(testAq, false),
                         s_Swerve.followTrajectoryCommand(test2, false).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.STOW)),
-                        new ArmToNode(a_Arm, 1),
-                        new InstantCommand(() -> i_Intake.intakeOutFast()),
-                        new WaitCommand(0.3),
-                        s_Swerve.followTrajectoryCommand(test3, false).alongWith(new InstantCommand(() -> i_Intake.setholdPosition())),
-                        new RepeatCommand(new InstantCommand(() -> s_Swerve.AutoBalance()))                        
+                        new RepeatCommand(new InstantCommand(() -> s_Swerve.AutoBalance()))                             
                     ))
     
             );

@@ -62,6 +62,7 @@ public class RobotContainer {
     private final CANdleSystem m_candleSubsystem = new CANdleSystem(driver.getHID());
     private final Arm arm = new Arm();
     private final Intake intake = new Intake();
+    private final DigitalServo servo = new DigitalServo();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -102,29 +103,26 @@ public class RobotContainer {
         driver.povUp().onTrue((new InstantCommand(() -> s_Swerve.zeroGyro())));
         driver.start().whileTrue(Commands.run(s_Swerve::AutoBalance, s_Swerve).andThen(s_Swerve::stopDrive, s_Swerve));
 
+        driver.povLeft().onTrue(new InstantCommand(() -> servo.set(0)));
+        driver.povDown().onTrue(new InstantCommand(() -> servo.set(0.1)));
+        driver.povRight().onTrue(new InstantCommand(() -> servo.set(0.3)));
         //operator.a().whileTrue((new RepeatCommand(new InstantCommand(() -> arm.setLowerArmSetPoint(2.0)))));
+
 
 
         operator.start().onTrue(new InstantCommand(() -> GamePiece.toggleGamePiece()));
 
-        operator.povUp().onTrue(new ArmToSetpoint(arm, Constants.Arm.SUBSTATION).alongWith(new InstantCommand(() -> intake.intakeIn())));
+        operator.povUp().onTrue(new ArmToSetpoint(arm, Constants.Arm.SUBSTATION).andThen(new InstantCommand(() -> intake.intakeIn())));
         operator.povDown().onTrue(new ArmToSetpoint(arm, Constants.Arm.STOW));
 
         operator.a().onTrue(new ArmToNode(arm, 1));
         operator.b().onTrue(new ArmToNode(arm, 2));
         operator.y().onTrue(new ArmToNode(arm, 3));
-        operator.rightTrigger().onTrue(new ArmToSetpoint(arm, Constants.Arm.FLOORLOAD).alongWith(new InstantCommand(() -> intake.intakeIn())));
+        operator.rightTrigger().onTrue(new ArmToSetpoint(arm, Constants.Arm.FLOORLOAD).andThen(new InstantCommand(() -> intake.intakeIn())));
+        operator.leftTrigger().onTrue(new Score(arm, intake).andThen(new ArmToSetpoint(arm, Constants.Arm.STOW)));
 
         intakeIn.whileTrue(new RepeatCommand(new InstantCommand(() -> intake.intakeIn())));
         intakeOut.whileTrue(new RepeatCommand(new InstantCommand(() -> intake.intakeOut())));
-
-        new JoystickButton(driver.getHID(), BlockButton).whenPressed(m_candleSubsystem::setColors, m_candleSubsystem);
-        new JoystickButton(driver.getHID(), IncrementAnimButton).whenPressed(m_candleSubsystem::incrementAnimation, m_candleSubsystem);
-        new JoystickButton(driver.getHID(), DecrementAnimButton).whenPressed(m_candleSubsystem::decrementAnimation, m_candleSubsystem);
-    
-        new POVButton(driver.getHID(), MaxBrightnessAngle).whenPressed(new CANdleConfigCommands.ConfigBrightness(m_candleSubsystem, 1.0));
-        new POVButton(driver.getHID(), MidBrightnessAngle).whenPressed(new CANdleConfigCommands.ConfigBrightness(m_candleSubsystem, 0.3));
-        new POVButton(driver.getHID(), ZeroBrightnessAngle).whenPressed(new CANdleConfigCommands.ConfigBrightness(m_candleSubsystem, 0));
     }
 
     /**
@@ -134,6 +132,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new exampleAuto(s_Swerve, arm, intake);
+        return new AutoRed1CubeHalfBalance(s_Swerve, arm, intake);
     }
 }

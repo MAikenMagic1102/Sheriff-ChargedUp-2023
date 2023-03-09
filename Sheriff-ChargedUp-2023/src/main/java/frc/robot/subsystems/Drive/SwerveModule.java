@@ -97,16 +97,30 @@ public class SwerveModule {
 
     private void waitForCanCoder(){
         /*
-         * Wait for up to 1000 ms for a good CANcoder signal.
+         * Wait for up to 2000 ms for a good CANcoder signal.
          *
          * This prevents a race condition during program startup
          * where we try to synchronize the Falcon encoder to the
          * CANcoder before we have received any position signal
          * from the CANcoder.
          */
+        double firstGoodTimestamp = 0;
         for (int i = 0; i < 100; ++i) {
+            //Wait for an OK to seed the timestamp of good data.
+
             angleEncoder.getAbsolutePosition();
             if (angleEncoder.getLastError() == ErrorCode.OK) {
+                firstGoodTimestamp = angleEncoder.getLastTimestamp();
+                break;
+            }
+            Timer.delay(0.010);            
+            CANcoderInitTime += 10;
+        }
+        for(int i=0; i < 100; ++i){
+            //Wait for an OK to seed the timestamp of good data.
+            angleEncoder.getAbsolutePosition();
+            if (angleEncoder.getLastError() == ErrorCode.OK && angleEncoder.getLastTimestamp() != firstGoodTimestamp) {
+                //The timestamp changed so we know we are okay to proceed.
                 break;
             }
             Timer.delay(0.010);            
@@ -155,7 +169,7 @@ public class SwerveModule {
     }
 
     public void resetToAbsolute(){
-        //waitForCanCoder();
+        waitForCanCoder();
 
         double absolutePosition = Conversions.degreesToFalcon(makePositiveDegrees(getCanCoder().getDegrees() - angleOffset.getDegrees()), Constants.Swerve.angleGearRatio);
         mAngleMotor.setSelectedSensorPosition(absolutePosition);
