@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.CANdleConfiguration;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -13,11 +17,16 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.GamePiece;
+import frc.lib.util.GamePiece.GamePieceType;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
   private CANSparkMax leftIntake = new CANSparkMax(Constants.Intake.leftIntakeID, MotorType.kBrushless);
   private CANSparkMax rightIntake = new CANSparkMax(Constants.Intake.rightIntakeID, MotorType.kBrushless);
+
+  private final CANdle m_candle = new CANdle(Constants.CANdleID);
+  private final int LedCount = 208;
 
   private SparkMaxPIDController PIDIntake1;
   private SparkMaxPIDController PIDIntake2;
@@ -52,6 +61,13 @@ public class Intake extends SubsystemBase {
 
     PIDIntake1.setP(Constants.Intake.positionkP);
     PIDIntake2.setP(Constants.Intake.positionkP);
+
+    CANdleConfiguration configAll = new CANdleConfiguration();
+    configAll.statusLedOffWhenActive = true;
+    configAll.disableWhenLOS = false;
+    configAll.stripType = LEDStripType.GRB;
+    configAll.brightnessScalar = 1;
+    configAll.vBatOutputMode = VBatOutputMode.On;
   }
 
   public void setholdPosition(){
@@ -83,7 +99,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean getHasGamepiece(){
-    if(keepHold && (intake1Enc.getVelocity() < 3 && intake2Enc.getVelocity() < 3)){
+    if(keepHold && (intake1Enc.getVelocity() < 10 || intake2Enc.getVelocity() < 10)){
       hasGamepiece = true;
     }else{
       hasGamepiece = false;
@@ -103,6 +119,17 @@ public class Intake extends SubsystemBase {
     // SmartDashboard.putNumber("Intake2 Pos", intake2Enc.getPosition());
     // SmartDashboard.putNumber("Intake1 Velocity", intake1Enc.getVelocity());
     // SmartDashboard.putNumber("Intake2 Velocity", intake2Enc.getVelocity());
+    if(this.getHasGamepiece()){
+      m_candle.setLEDs(0, 255, 0);
+    }else{
+      if(GamePiece.getGamePiece() == GamePieceType.Cone){
+        m_candle.setLEDs(255, 255, 0);
+      }else{
+        if(GamePiece.getGamePiece() == GamePieceType.Cube){
+          m_candle.setLEDs(128, 0, 128);
+        }
+      }
+    }
     SmartDashboard.putBoolean("Has Gamepiece", getHasGamepiece());
   }
 }

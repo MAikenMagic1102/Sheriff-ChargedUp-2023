@@ -3,6 +3,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -18,6 +20,7 @@ import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Drive.Swerve;
+import frc.robot.subsystems.Vision.LimelightHelpers;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -59,27 +62,36 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    private final CANdleSystem m_candleSubsystem = new CANdleSystem(driver.getHID());
+    //private final CANdleSystem m_candleSubsystem = new CANdleSystem(driver.getHID());
     private final Arm arm = new Arm();
     private final Intake intake = new Intake();
     private final DigitalServo servo = new DigitalServo();
 
+    private SendableChooser<Command> m_autoChooser = new SendableChooser<>();
+
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+
+        m_autoChooser.addOption("RED 1 Cube 1 Cone Balance", new AutoRed1Cube1ConeBalance(s_Swerve, arm, intake, servo));
+        m_autoChooser.addOption("RED 1 Cube AqCone Balance", new AutoRed1CubeHalfBalance(s_Swerve, arm, intake, servo));
+        m_autoChooser.addOption("No Auto", null);
+        SmartDashboard.putData("Auto", m_autoChooser);
+
         s_Swerve.setDefaultCommand(
             new TeleopSwerveWin(
                 s_Swerve, 
                 () -> -driver.getRawAxis(translationAxis), 
                 () -> -driver.getRawAxis(strafeAxis), 
                 () -> -driver.getRawAxis(rotationAxis), 
-                () -> robotCentric.getAsBoolean(),
+                driver.leftTrigger(),
                 driver.leftBumper(),
                 driver.rightBumper(),
                 driver.y(),
                 driver.b(),
                 driver.a(),
-                driver.x()
+                driver.x(),
+                driver.rightTrigger()
             )
         );
 
@@ -103,12 +115,10 @@ public class RobotContainer {
         driver.povUp().onTrue((new InstantCommand(() -> s_Swerve.zeroGyro())));
         driver.start().whileTrue(Commands.run(s_Swerve::AutoBalance, s_Swerve).andThen(s_Swerve::stopDrive, s_Swerve));
 
-        driver.povLeft().onTrue(new InstantCommand(() -> servo.set(0)));
-        driver.povDown().onTrue(new InstantCommand(() -> servo.set(0.1)));
-        driver.povRight().onTrue(new InstantCommand(() -> servo.set(0.3)));
+        // driver.povLeft().onTrue(new InstantCommand(() -> servo.set(0)));
+        // driver.povDown().onTrue(new InstantCommand(() -> servo.set(0.05)));
+        // driver.povRight().onTrue(new InstantCommand(() -> servo.set(0.3)));
         //operator.a().whileTrue((new RepeatCommand(new InstantCommand(() -> arm.setLowerArmSetPoint(2.0)))));
-
-
 
         operator.start().onTrue(new InstantCommand(() -> GamePiece.toggleGamePiece()));
 
@@ -132,6 +142,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new AutoRed1CubeHalfBalance(s_Swerve, arm, intake);
+        return m_autoChooser.getSelected();
     }
 }

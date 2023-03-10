@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drive.Swerve;
+import frc.robot.subsystems.Vision.LimelightHelpers;
 
 
 public class TeleopSwerveWin extends CommandBase {    
@@ -21,6 +22,7 @@ public class TeleopSwerveWin extends CommandBase {
     private BooleanSupplier m_halfSpeed;
     private BooleanSupplier m_quarterSpeed;
     private BooleanSupplier m_90, m_180, m_270, m_0;
+    private BooleanSupplier m_limelightmode;
 
     private double rotationVal, xVal, yVal;
     double m_angle = 0d;
@@ -40,7 +42,7 @@ public class TeleopSwerveWin extends CommandBase {
     public TeleopSwerveWin(Swerve swerve, DoubleSupplier xSup, DoubleSupplier ySup, 
                         DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, 
                         BooleanSupplier halfSpeed, BooleanSupplier quarterSpeed, 
-                        BooleanSupplier zero, BooleanSupplier ninety, BooleanSupplier oneEighty, BooleanSupplier twoSeventy){
+                        BooleanSupplier zero, BooleanSupplier ninety, BooleanSupplier oneEighty, BooleanSupplier twoSeventy, BooleanSupplier limelightmode){
         m_Swerve = swerve;
         this.ySup = ySup;
         this.xSup = xSup;
@@ -51,6 +53,7 @@ public class TeleopSwerveWin extends CommandBase {
         m_180 = oneEighty;
         m_90 = ninety;
         m_270 = twoSeventy;
+        m_limelightmode = limelightmode;
         addRequirements(m_Swerve);
         m_speedChooser = new SendableChooser<Double>();
         m_speedChooser.addOption("100%", 1.0);
@@ -71,6 +74,10 @@ public class TeleopSwerveWin extends CommandBase {
 
     @Override
     public void execute() {
+        if(!m_limelightmode.getAsBoolean()){
+            LimelightHelpers.setPipelineIndex("limelight-vtwotop", 0);
+        }
+
 
         /* Get Values, Deadband*/
         boolean rotateWithButton = m_0.getAsBoolean() || m_90.getAsBoolean() || m_180.getAsBoolean() || m_270.getAsBoolean();
@@ -100,7 +107,6 @@ public class TeleopSwerveWin extends CommandBase {
             rotationVal = (MathUtil.applyDeadband(rotationSup.getAsDouble() * m_speedChooser.getSelected(), Constants.stickDeadband))*0.75;
         }
 
-
         if(m_quarterSpeed.getAsBoolean()){
             xVal = xVal*0.25;
             yVal =yVal*0.25;
@@ -122,8 +128,12 @@ public class TeleopSwerveWin extends CommandBase {
                 rotationVal = rotationVal *1.0;
             } 
         }
-        
 
+        if(m_limelightmode.getAsBoolean()){
+            LimelightHelpers.setPipelineIndex("limelight-vtwotop", 1);
+            yVal = (LimelightHelpers.getTX("limelight-vtwotop") * 0.04) * (0.25);
+        }
+        
         m_Swerve.drive(
             new Translation2d(xVal, yVal).times(Constants.Swerve.maxSpeed), 
             rotationVal * Constants.Swerve.maxAngularVelocity * 0.9, 
