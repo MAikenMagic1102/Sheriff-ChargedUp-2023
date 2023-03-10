@@ -34,14 +34,16 @@ public final class Constants {
             ArmMap.put(new Node(1, 1), new ArmSetpoint(0.8, 0.2));
             ArmMap.put(new Node(2, 1), new ArmSetpoint(2.45, 1.7));
             ArmMap.put(new Node(3, 1), new ArmSetpoint(2.9, 4.8));
+            ArmMap.put(new Node(4, 1), new ArmSetpoint(2.55, 0.2));
             ArmMap.put(new Node(1, 2), new ArmSetpoint(0.8, 0.2));
             ArmMap.put(new Node(2, 2), new ArmSetpoint(2.25, 1.7));
             ArmMap.put(new Node(3, 2), new ArmSetpoint(2.7, 4.8));
+            ArmMap.put(new Node(4, 2), new ArmSetpoint(2.45, 0.2));
         }
 
         public static final double RETRACT = 0.1;
         public static final ArmSetpoint STOW = new ArmSetpoint(0.62, 0.1); 
-        public static final ArmSetpoint FLOORLOAD = new ArmSetpoint(0.92, 2.45); 
+        public static final ArmSetpoint FLOORLOAD = new ArmSetpoint(0.74, 2.06); 
         public static final ArmSetpoint SUBSTATION = new ArmSetpoint(2.45, 0.1);  
 
     }

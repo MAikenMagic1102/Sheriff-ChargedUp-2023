@@ -122,7 +122,7 @@ public class RobotContainer {
 
         operator.start().onTrue(new InstantCommand(() -> GamePiece.toggleGamePiece()));
 
-        operator.povUp().onTrue(new ArmToSetpoint(arm, Constants.Arm.SUBSTATION).andThen(new InstantCommand(() -> intake.intakeIn())));
+        operator.povUp().onTrue(new ArmToNode(arm, 4).andThen(new InstantCommand(() -> intake.intakeIn())));
         operator.povDown().onTrue(new ArmToSetpoint(arm, Constants.Arm.STOW));
 
         operator.a().onTrue(new ArmToNode(arm, 1));

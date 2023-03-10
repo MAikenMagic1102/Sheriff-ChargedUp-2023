@@ -24,6 +24,7 @@ import frc.robot.Constants;
 public class Intake extends SubsystemBase {
   private CANSparkMax leftIntake = new CANSparkMax(Constants.Intake.leftIntakeID, MotorType.kBrushless);
   private CANSparkMax rightIntake = new CANSparkMax(Constants.Intake.rightIntakeID, MotorType.kBrushless);
+  private CANSparkMax hRollerIntake = new CANSparkMax(14, MotorType.kBrushless);
 
   private final CANdle m_candle = new CANdle(Constants.CANdleID);
   private final int LedCount = 208;
@@ -52,12 +53,15 @@ public class Intake extends SubsystemBase {
 
     leftIntake.setSmartCurrentLimit(Constants.Intake.smartCurrentLimit);
     rightIntake.setSmartCurrentLimit(Constants.Intake.smartCurrentLimit);
+    hRollerIntake.setSmartCurrentLimit(Constants.Intake.smartCurrentLimit);
 
     leftIntake.setInverted(true);
     rightIntake.setInverted(false);
+    hRollerIntake.setInverted(true);
 
     leftIntake.setIdleMode(IdleMode.kBrake);
     rightIntake.setIdleMode(IdleMode.kBrake);
+    hRollerIntake.setIdleMode(IdleMode.kBrake);
 
     PIDIntake1.setP(Constants.Intake.positionkP);
     PIDIntake2.setP(Constants.Intake.positionkP);
@@ -74,32 +78,41 @@ public class Intake extends SubsystemBase {
     if(keepHold){
       PIDIntake1.setReference(0.6, ControlType.kDutyCycle);
       PIDIntake2.setReference(0.6, ControlType.kDutyCycle);
+      if(!this.getHasGamepiece()){
+        hRollerIntake.set(0.6);
+      }else{
+        hRollerIntake.set(0.0);
+      }
     }else{
       PIDIntake1.setReference(0.0, ControlType.kDutyCycle);
       PIDIntake2.setReference(0.0, ControlType.kDutyCycle);
+      hRollerIntake.set(0.0);
     }
   }
 
   public void intakeIn(){
     PIDIntake1.setReference(0.6, ControlType.kDutyCycle);
     PIDIntake2.setReference(0.6, ControlType.kDutyCycle);
+    hRollerIntake.set(0.6);
     keepHold = true;
   }
 
   public void intakeOut(){
     PIDIntake1.setReference(-0.1, ControlType.kDutyCycle);
     PIDIntake2.setReference(-0.1, ControlType.kDutyCycle);
+    hRollerIntake.set(-0.1);
     keepHold = false;
   }
 
   public void intakeOutFast(){
     PIDIntake1.setReference(-0.6, ControlType.kDutyCycle);
     PIDIntake2.setReference(-0.6, ControlType.kDutyCycle);
+    hRollerIntake.set(-0.6);
     keepHold = false;
   }
 
   public boolean getHasGamepiece(){
-    if(keepHold && (intake1Enc.getVelocity() < 10 || intake2Enc.getVelocity() < 10)){
+    if(keepHold && (intake1Enc.getVelocity() < 1000 || intake2Enc.getVelocity() < 1000)){
       hasGamepiece = true;
     }else{
       hasGamepiece = false;
@@ -117,8 +130,8 @@ public class Intake extends SubsystemBase {
     // SmartDashboard.putNumber("Intake2 Error", intake2Enc.getPosition() - rightPOS);
     // SmartDashboard.putNumber("Intake1 Pos", intake1Enc.getPosition());
     // SmartDashboard.putNumber("Intake2 Pos", intake2Enc.getPosition());
-    // SmartDashboard.putNumber("Intake1 Velocity", intake1Enc.getVelocity());
-    // SmartDashboard.putNumber("Intake2 Velocity", intake2Enc.getVelocity());
+    SmartDashboard.putNumber("Intake1 Velocity", intake1Enc.getVelocity());
+    SmartDashboard.putNumber("Intake2 Velocity", intake2Enc.getVelocity());
     if(this.getHasGamepiece()){
       m_candle.setLEDs(0, 255, 0);
     }else{

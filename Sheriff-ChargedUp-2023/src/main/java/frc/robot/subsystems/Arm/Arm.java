@@ -92,7 +92,7 @@ public class Arm extends SubsystemBase {
     lowerArm.setRotorPosition(0);
     upperArm.setRotorPosition(0);
 
-    GamePiece.toggleGamePiece();
+    GamePiece.setGamePiece(GamePieceType.Cube);
   }
 
   public void initArm(){

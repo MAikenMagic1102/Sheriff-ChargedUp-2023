@@ -49,9 +49,8 @@ public class AutoBlue1Cube1ConeBalance extends SequentialCommandGroup {
                         s_Swerve.followTrajectoryCommand(test, true).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD).alongWith(new InstantCommand(() -> i_Intake.intakeIn()))),
                         s_Swerve.followTrajectoryCommand(testAq, false),
                         s_Swerve.followTrajectoryCommand(test2, false).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.SUBSTATION)),
-                        new ArmToNode(a_Arm, 3),
+                        new ArmToNode(a_Arm, 2),
                         new Score(a_Arm, i_Intake),
-                        new ArmToSetpoint(a_Arm, Constants.Arm.SUBSTATION),
                         s_Swerve.followTrajectoryCommand(test3, false).alongWith(new InstantCommand(() -> i_Intake.setholdPosition()).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.STOW))),
                         new RepeatCommand(new InstantCommand(() -> s_Swerve.AutoBalance()))                        
                     ))
