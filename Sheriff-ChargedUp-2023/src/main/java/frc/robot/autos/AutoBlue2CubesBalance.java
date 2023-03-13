@@ -33,22 +33,26 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-public class AutoRed1CubeHalfBalance extends SequentialCommandGroup {
-    public AutoRed1CubeHalfBalance(Swerve s_Swerve, Arm a_Arm, Intake i_Intake, DigitalServo servo){
-        PathPlannerTrajectory test = PathPlanner.loadPath("1102TestRed", 5.0, 3.0);
+public class AutoBlue2CubesBalance extends SequentialCommandGroup {
+    public AutoBlue2CubesBalance(Swerve s_Swerve, Arm a_Arm, Intake i_Intake, DigitalServo servo){
+        PathPlannerTrajectory test = PathPlanner.loadPath("1102TestBlue", 5.0, 3.0);
         PathPlannerTrajectory testAq = PathPlanner.loadPath("1102TestAquireGamepiece", 2.0, 1.5);
-        PathPlannerTrajectory test2 = PathPlanner.loadPath("1102TestReturnBalance", 1.5, 1.5);
+        PathPlannerTrajectory test2 = PathPlanner.loadPath("1102TestReturn", 5.0, 3.0);
+        PathPlannerTrajectory test3 = PathPlanner.loadPath("1102TestReturnBridge", 2.0, 1.5);
         
             addRequirements(s_Swerve, a_Arm, i_Intake);
             addCommands(
                 new ParallelCommandGroup(
                     new SequentialCommandGroup(
-                        new InstantCommand(() -> servo.set(0)),
+                        new InstantCommand(() -> servo.set(0)),//SHOOTER
                         new WaitCommand(0.3),
                         s_Swerve.followTrajectoryCommand(test, true).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD).alongWith(new InstantCommand(() -> i_Intake.intakeIn()).alongWith(new InstantCommand(() -> servo.set(0.05))))),
                         s_Swerve.followTrajectoryCommand(testAq, false),
-                        s_Swerve.followTrajectoryCommand(test2, false).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.STOW)),
-                        new RepeatCommand(new InstantCommand(() -> s_Swerve.AutoBalance()))                             
+                        s_Swerve.followTrajectoryCommand(test2, false).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.SUBSTATION)),
+                        new ArmToNode(a_Arm, 2),
+                        new Score(a_Arm, i_Intake),
+                        s_Swerve.followTrajectoryCommand(test3, false).alongWith(new InstantCommand(() -> i_Intake.setholdPosition()).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.STOW))),
+                        new RepeatCommand(new InstantCommand(() -> s_Swerve.AutoBalance()))                        
                     ))
     
             );

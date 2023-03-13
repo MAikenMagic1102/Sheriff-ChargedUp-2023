@@ -10,10 +10,12 @@ import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -41,7 +43,10 @@ public class Intake extends SubsystemBase {
   private double leftPOS = 0;
   private double rightPOS = 0;
 
-  private boolean keepHold;
+  public boolean keepHold;
+
+  private SparkMaxLimitSwitch leftLimit;
+  private SparkMaxLimitSwitch rightLimit;
 
 
   public Intake() {
@@ -51,9 +56,15 @@ public class Intake extends SubsystemBase {
     PIDIntake1 = leftIntake.getPIDController();
     PIDIntake2 = rightIntake.getPIDController();
 
+    leftLimit = leftIntake.getForwardLimitSwitch(Type.kNormallyOpen);
+    rightLimit = rightIntake.getForwardLimitSwitch(Type.kNormallyOpen);
+
+    leftLimit.enableLimitSwitch(false);
+    rightLimit.enableLimitSwitch(false);
+
     leftIntake.setSmartCurrentLimit(Constants.Intake.smartCurrentLimit);
     rightIntake.setSmartCurrentLimit(Constants.Intake.smartCurrentLimit);
-    hRollerIntake.setSmartCurrentLimit(Constants.Intake.smartCurrentLimit);
+    hRollerIntake.setSmartCurrentLimit(15);
 
     leftIntake.setInverted(true);
     rightIntake.setInverted(false);
@@ -76,13 +87,19 @@ public class Intake extends SubsystemBase {
 
   public void setholdPosition(){
     if(keepHold){
-      PIDIntake1.setReference(0.6, ControlType.kDutyCycle);
-      PIDIntake2.setReference(0.6, ControlType.kDutyCycle);
-      if(!this.getHasGamepiece()){
-        hRollerIntake.set(0.6);
-      }else{
-        hRollerIntake.set(0.0);
-      }
+        if(leftLimit.isPressed() || rightLimit.isPressed()){
+          PIDIntake1.setReference(0.2, ControlType.kDutyCycle);
+          PIDIntake2.setReference(0.2, ControlType.kDutyCycle);
+        }else{
+          PIDIntake1.setReference(0.6, ControlType.kDutyCycle);
+          PIDIntake2.setReference(0.6, ControlType.kDutyCycle);
+        }
+
+        if(leftLimit.isPressed() || rightLimit.isPressed()){
+          hRollerIntake.set(0.0);
+        }else{
+          hRollerIntake.set(0.6);
+        }
     }else{
       PIDIntake1.setReference(0.0, ControlType.kDutyCycle);
       PIDIntake2.setReference(0.0, ControlType.kDutyCycle);
@@ -112,7 +129,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean getHasGamepiece(){
-    if(keepHold && (intake1Enc.getVelocity() < 1000 || intake2Enc.getVelocity() < 1000)){
+    if(keepHold && (intake1Enc.getVelocity() < 2000 || intake2Enc.getVelocity() < 2000)){
       hasGamepiece = true;
     }else{
       hasGamepiece = false;

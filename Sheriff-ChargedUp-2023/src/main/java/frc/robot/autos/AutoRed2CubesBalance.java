@@ -34,8 +34,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-public class AutoRed1Cube1ConeBalance extends SequentialCommandGroup {
-    public AutoRed1Cube1ConeBalance(Swerve s_Swerve, Arm a_Arm, Intake i_Intake, DigitalServo servo){
+public class AutoRed2CubesBalance extends SequentialCommandGroup {
+    public AutoRed2CubesBalance(Swerve s_Swerve, Arm a_Arm, Intake i_Intake, DigitalServo servo){
         PathPlannerTrajectory test = PathPlanner.loadPath("1102TestRed", 5.0, 3.0);
         PathPlannerTrajectory testAq = PathPlanner.loadPath("1102TestAquireGamepiece", 2.0, 1.5);
         PathPlannerTrajectory test2 = PathPlanner.loadPath("1102TestReturn", 5.0, 3.0);

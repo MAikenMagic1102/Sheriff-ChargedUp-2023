@@ -73,8 +73,14 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
 
-        m_autoChooser.addOption("RED 1 Cube 1 Cone Balance", new AutoRed1Cube1ConeBalance(s_Swerve, arm, intake, servo));
-        m_autoChooser.addOption("RED 1 Cube AqCone Balance", new AutoRed1CubeHalfBalance(s_Swerve, arm, intake, servo));
+        intake.keepHold = false;
+
+        m_autoChooser.addOption("BLUE 1 Cube AqCube Balance", new AutoBlue1CubeHalfBalance(s_Swerve, arm, intake, servo));
+        m_autoChooser.addOption("BLUE 2 Cube Balance" , new AutoBlue2CubesBalance(s_Swerve, arm, intake, servo));
+        m_autoChooser.addOption("1 Cube", new CubeBalance(s_Swerve, arm, intake, servo));
+        m_autoChooser.addOption("RED 2 Cube Balance", new AutoRed2CubesBalance(s_Swerve, arm, intake, servo));
+        m_autoChooser.addOption("RED 1 Cube AqCube Balance", new AutoRed1CubeHalfBalance(s_Swerve, arm, intake, servo));
+        m_autoChooser.addOption("RED 3 Cube", new AutoRed3Cube(s_Swerve, arm, intake, servo));
         m_autoChooser.addOption("No Auto", null);
         SmartDashboard.putData("Auto", m_autoChooser);
 
