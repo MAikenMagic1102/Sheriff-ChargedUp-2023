@@ -35,8 +35,8 @@ public class DigitalServo extends PWM {
    * @param channel The PWM channel to which the servo is attached. 0-9 are on-board, 10-19 are on
    *                the MXP port
    */
-  public DigitalServo() {
-    super(0);
+  public DigitalServo(int PWM) {
+    super(PWM);
     setBounds(2.4, 0.002, 0, 1.520, 0.6);
     //setBounds(kDefaultMaxServoPWM, 0, 0, 0, kDefaultMinServoPWM);
     setPeriodMultiplier(PeriodMultiplier.k4X);

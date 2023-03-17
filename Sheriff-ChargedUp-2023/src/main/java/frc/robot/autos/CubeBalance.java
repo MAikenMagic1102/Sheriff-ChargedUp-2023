@@ -4,6 +4,7 @@ import frc.robot.Constants;
 import frc.robot.commands.ArmToNode;
 import frc.robot.commands.ArmToSetpoint;
 import frc.robot.commands.Score;
+import frc.robot.subsystems.CubeKicker;
 import frc.robot.subsystems.DigitalServo;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm.Arm;
@@ -34,15 +35,15 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class CubeBalance extends SequentialCommandGroup {
-    public CubeBalance (Swerve s_Swerve, Arm a_Arm, Intake i_Intake, DigitalServo servo){
+    public CubeBalance (Swerve s_Swerve, Arm a_Arm, Intake i_Intake, CubeKicker lilKick){
         PathPlannerTrajectory test = PathPlanner.loadPath("1102BalanceOnly", 2.0, 1.5);
             addRequirements(s_Swerve, a_Arm, i_Intake);
             addCommands(
                 new ParallelCommandGroup(
                     new SequentialCommandGroup(
-                        new InstantCommand(() -> servo.set(0)),
+                        new InstantCommand(() -> lilKick.fire()),
                         new WaitCommand(0.3),
-                        new InstantCommand(() -> servo.set(0.05)),
+                        new InstantCommand(() -> lilKick.home()),
                         s_Swerve.followTrajectoryCommand(test, true),
                         new RepeatCommand(new InstantCommand(() -> s_Swerve.AutoBalance()))
                                 

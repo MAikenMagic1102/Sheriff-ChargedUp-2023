@@ -21,6 +21,10 @@ public final class Constants {
     public static final int CANdleID = 31;
     public static final boolean tuningMode = true;
 
+    public static final class CubeKicker{
+        public static final int pwmPort = 0;
+    }
+
     public static final class Arm {
         public static final String CANbus = "rio";
         public static final int lowerArmID = 13;

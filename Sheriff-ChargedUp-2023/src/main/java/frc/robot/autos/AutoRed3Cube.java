@@ -5,6 +5,7 @@ import frc.robot.Constants;
 import frc.robot.commands.ArmToNode;
 import frc.robot.commands.ArmToSetpoint;
 import frc.robot.commands.Score;
+import frc.robot.subsystems.CubeKicker;
 import frc.robot.subsystems.DigitalServo;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm.Arm;
@@ -35,7 +36,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class AutoRed3Cube extends SequentialCommandGroup {
-    public AutoRed3Cube(Swerve s_Swerve, Arm a_Arm, Intake i_Intake, DigitalServo servo){
+    public AutoRed3Cube(Swerve s_Swerve, Arm a_Arm, Intake i_Intake, CubeKicker lilKick){
         PathPlannerTrajectory test = PathPlanner.loadPath("1102TestRed", 5.0, 3.0);
         PathPlannerTrajectory testAq = PathPlanner.loadPath("1102TestAquireGamepiece", 2.0, 1.5);
         PathPlannerTrajectory test2 = PathPlanner.loadPath("1102TestReturn", 5.0, 3.0);
@@ -46,9 +47,9 @@ public class AutoRed3Cube extends SequentialCommandGroup {
             addCommands(
                 new ParallelCommandGroup(
                     new SequentialCommandGroup(
-                        new InstantCommand(() -> servo.set(0)),
+                        new InstantCommand(() -> lilKick.fire()),
                         new WaitCommand(0.3),
-                        s_Swerve.followTrajectoryCommand(test, true).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD).alongWith(new InstantCommand(() -> i_Intake.intakeIn()).alongWith(new InstantCommand(() -> servo.set(0.05))))),
+                        s_Swerve.followTrajectoryCommand(test, true).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD).alongWith(new InstantCommand(() -> i_Intake.intakeIn()).alongWith(new InstantCommand(() -> lilKick.home())))),
                         s_Swerve.followTrajectoryCommand(testAq, false),
                         s_Swerve.followTrajectoryCommand(test2, false).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.SUBSTATION)),
                         new ArmToNode(a_Arm, 2),
