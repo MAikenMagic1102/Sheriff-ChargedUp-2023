@@ -46,9 +46,7 @@ public class RobotContainer {
     private final JoystickButton robotCentric = new JoystickButton(driver.getHID(), XboxController.Button.kLeftBumper.value);
 
     /* Operator Buttons */
-    private final JoystickButton intakeIn = new JoystickButton(operator.getHID(), XboxController.Button.kRightBumper.value);
-
-    private final JoystickButton intakeOut = new JoystickButton(operator.getHID(), XboxController.Button.kLeftBumper.value);
+ 
     public static final int IncrementAnimButton = XboxController.Button.kRightBumper.value;
     public static final int DecrementAnimButton = XboxController.Button.kLeftBumper.value;
     public static final int BlockButton = XboxController.Button.kStart.value;
@@ -87,21 +85,22 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerveWin(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis), 
-                () -> -driver.getRawAxis(strafeAxis), 
-                () -> -driver.getRawAxis(rotationAxis), 
-                driver.leftTrigger(),
-                driver.leftBumper(),
-                driver.rightBumper(),
-                driver.y(),
-                driver.b(),
-                driver.a(),
-                driver.x(),
+                () -> -driver.getLeftY(), //translation
+                () -> -driver.getLeftX(), //strafe
+                () -> -driver.getRightX(), //rotation
+                driver.leftTrigger(), //robot centric 
+                driver.leftBumper(), //50% speed
+                driver.rightBumper(), //25% speed
+                driver.y(), //face away
+                driver.b(), // face right
+                driver.a(), //face towards
+                driver.x(), //face left
                 driver.rightTrigger()
             )
         );
 
-        arm.setDefaultCommand(new RunCommand(() -> arm.setArmsOpenLoop(-1 * operator.getRawAxis(lowerArmAxis) * 0.4, -1 * operator.getRawAxis(upperArmAxis) * 0.4), arm));
+        //Left thumbstick moves upper arm and right thumbstick moves lower arm
+        arm.setDefaultCommand(new RunCommand(() -> arm.setArmsOpenLoop(operator.getLeftY(), operator.getRightY()), arm));
 
         intake.setDefaultCommand(new RunCommand(() -> intake.setholdPosition(), intake));
 
@@ -126,19 +125,26 @@ public class RobotContainer {
         // driver.povRight().onTrue(new InstantCommand(() -> servo.set(0.3)));
         //operator.a().whileTrue((new RepeatCommand(new InstantCommand(() -> arm.setLowerArmSetPoint(2.0)))));
 
+        //Start Button Pressed; Change Gamepiece
         operator.start().onTrue(new InstantCommand(() -> GamePiece.toggleGamePiece()));
-
+        //Up arrow pressed; arm goes to substation height and turns the intake on
         operator.povUp().onTrue(new ArmToNode(arm, 4).andThen(new InstantCommand(() -> intake.intakeIn())));
+        //Down button pressed; Sets arm to stow position
         operator.povDown().onTrue(new ArmToSetpoint(arm, Constants.Arm.STOW));
-
+        //A button pressed; Sets arm to level 1
         operator.a().onTrue(new ArmToNode(arm, 1));
+        //B button pressed; sets arm to level 2
         operator.b().onTrue(new ArmToNode(arm, 2));
+        //Y button pressed; sets arm to level 3
         operator.y().onTrue(new ArmToNode(arm, 3));
+        //Right trigger pressed; sets arm to floor level and turns on intake
         operator.rightTrigger().onTrue(new ArmToSetpoint(arm, Constants.Arm.FLOORLOAD).andThen(new InstantCommand(() -> intake.intakeIn())));
+        //Left trigger pressed; sets intake to score then sets arm to stow position
         operator.leftTrigger().onTrue(new Score(arm, intake).andThen(new ArmToSetpoint(arm, Constants.Arm.STOW)));
-
-        intakeIn.whileTrue(new RepeatCommand(new InstantCommand(() -> intake.intakeIn())));
-        intakeOut.whileTrue(new RepeatCommand(new InstantCommand(() -> intake.intakeOut())));
+        //Right bumber pressed; intake in
+        operator.rightBumper().whileTrue(new RepeatCommand(new InstantCommand(() -> intake.intakeIn())));
+        //Left bumper pressed; intake out
+        operator.leftBumper().whileTrue(new RepeatCommand(new InstantCommand(() -> intake.intakeOut())));
     }
 
     /**

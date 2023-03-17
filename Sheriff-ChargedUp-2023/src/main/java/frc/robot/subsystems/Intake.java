@@ -26,7 +26,7 @@ import frc.robot.Constants;
 public class Intake extends SubsystemBase {
   private CANSparkMax leftIntake = new CANSparkMax(Constants.Intake.leftIntakeID, MotorType.kBrushless);
   private CANSparkMax rightIntake = new CANSparkMax(Constants.Intake.rightIntakeID, MotorType.kBrushless);
-  private CANSparkMax hRollerIntake = new CANSparkMax(14, MotorType.kBrushless);
+  private CANSparkMax hRollerIntake = new CANSparkMax(Constants.Intake.hRollerID, MotorType.kBrushless);
 
   private final CANdle m_candle = new CANdle(Constants.CANdleID);
   private final int LedCount = 208;

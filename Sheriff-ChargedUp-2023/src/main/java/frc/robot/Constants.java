@@ -51,6 +51,7 @@ public final class Constants {
     public static final class Intake {
         public static final int leftIntakeID = 11;
         public static final int rightIntakeID = 10;
+        public static final int hRollerID = 14;
 
         public static final int smartCurrentLimit = 25;
 
