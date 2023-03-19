@@ -21,6 +21,12 @@ public final class Constants {
     public static final int CANdleID = 31;
     public static final boolean tuningMode = true;
 
+    public static final class Limelight{
+        public static final String left = "limelight-newleft";
+        public static final String right = "limelight-newrigh";
+        public static final String top = "limelight-vtwotop";
+    }
+
     public static final class CubeKicker{
         public static final int pwmPort = 0;
     }

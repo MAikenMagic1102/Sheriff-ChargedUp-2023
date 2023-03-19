@@ -77,7 +77,7 @@ public class Swerve extends SubsystemBase {
     
             m_field.setRobotPose(swerveOdometry.getPoseMeters());
     
-            SmartDashboard.putData("Field", m_field);
+            SmartDashboard.putData("Field Swerve Odom", m_field);
             if(Constants.tuningMode){
                 SmartDashboard.putNumber("gyro Yaw", getYaw().getDegrees());
     
