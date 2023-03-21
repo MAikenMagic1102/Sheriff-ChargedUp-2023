@@ -151,7 +151,7 @@ public class Arm extends SubsystemBase {
         if(this.getUpperArmPosition() < 0.03 && upperDemand < 0){
           this.setUpperArmOpenLoop(0.0);
         }else{
-          this.setUpperArmOpenLoop(upperDemand);
+          this.setUpperArmOpenLoop(upperDemand * 0.5);
           resetHoldUpper = true;
         }
       }else{
@@ -169,7 +169,7 @@ public class Arm extends SubsystemBase {
 
 
       if(Math.abs(lowerDemand) > Constants.stickDeadband){
-        this.setLowerArmOpenLoop(lowerDemand);
+        this.setLowerArmOpenLoop(lowerDemand * 0.5);
         resetHoldLower = true;
       }else{
         if(resetHoldLower){

@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -66,22 +67,30 @@ public class Vision extends SubsystemBase {
         Pose2d blueLeftBotPose = LimelightHelpers.getBotPose2d_wpiBlue(Constants.Limelight.left);
         Pose2d blueRightBotPose = LimelightHelpers.getBotPose2d_wpiBlue(Constants.Limelight.right);
 
-        Pose2d blueLeftBotNoRot = new Pose2d(new Translation2d(blueLeftBotPose.getX(), blueLeftBotPose.getY()),
-        swerve.getYaw());
+        double leftLatency_tl = LimelightHelpers.getLatency_Pipeline(Constants.Limelight.left);
+        double leftLatency_tc = LimelightHelpers.getLatency_Capture(Constants.Limelight.left);
+        double leftTimestamp = Timer.getFPGATimestamp() - (leftLatency_tl/1000.0) - (leftLatency_tc/1000.0);
 
-        Pose2d blueRightBotNoRot = new Pose2d(new Translation2d(blueRightBotPose.getX(), blueRightBotPose.getY()),
-        swerve.getYaw());
+        double rightLatency_tl = LimelightHelpers.getLatency_Pipeline(Constants.Limelight.right);
+        double rightLatency_tc = LimelightHelpers.getLatency_Capture(Constants.Limelight.right);
+        double rightTimestamp = Timer.getFPGATimestamp() - (rightLatency_tl/1000.0) - (rightLatency_tc/1000.0);
 
-        if(isInMap(blueLeftBotNoRot) && isValidPose(blueLeftBotNoRot)){
-          leftCam.setRobotPose(blueLeftBotNoRot);
-          poseEst.addVisionMeasurement(blueLeftBotNoRot, LimelightHelpers.getLatency_Pipeline(Constants.Limelight.left));
-          SmartDashboard.putNumber("Left Latancy", LimelightHelpers.getLatency_Pipeline(Constants.Limelight.left));
+        // Pose2d blueLeftBotNoRot = new Pose2d(new Translation2d(blueLeftBotPose.getX(), blueLeftBotPose.getY()),
+        // swerve.getYaw());
+
+        // Pose2d blueRightBotNoRot = new Pose2d(new Translation2d(blueRightBotPose.getX(), blueRightBotPose.getY()),
+        // swerve.getYaw());
+
+        if(isInMap(blueLeftBotPose)){
+          leftCam.setRobotPose(blueLeftBotPose);
+          poseEst.addVisionMeasurement(blueLeftBotPose, leftTimestamp);
+          SmartDashboard.putNumber("Left Timestamp", leftTimestamp);
         }
         
-        if(isInMap(blueRightBotNoRot) && isValidPose(blueRightBotNoRot)){
-          rightCam.setRobotPose(blueRightBotNoRot);
-          poseEst.addVisionMeasurement(blueRightBotNoRot,LimelightHelpers.getLatency_Pipeline(Constants.Limelight.right));
-          SmartDashboard.putNumber("Right Latency", LimelightHelpers.getLatency_Pipeline(Constants.Limelight.right));
+        if(isInMap(blueRightBotPose)){
+          rightCam.setRobotPose(blueRightBotPose);
+          poseEst.addVisionMeasurement(blueRightBotPose, rightTimestamp);
+          SmartDashboard.putNumber("Right Timestamp", rightTimestamp);
         }
     }
 

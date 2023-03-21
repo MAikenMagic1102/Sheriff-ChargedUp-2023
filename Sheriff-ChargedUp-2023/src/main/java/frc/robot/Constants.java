@@ -36,7 +36,7 @@ public final class Constants {
         public static final int lowerArmID = 13;
         public static final int upperArmID = 12;
 
-        public static final double lowerArmRatio = (36.0 / 1.0);
+        public static final double lowerArmRatio = (25.0 / 1.0);
         public static final double upperArmRatio = (9.0 / 1.0);
 
         public static Map<Node, ArmSetpoint> ArmMap = new HashMap<Node, ArmSetpoint>();
@@ -108,14 +108,14 @@ public final class Constants {
         public static final boolean angleEnableCurrentLimit = true;
 
         public static final int driveContinuousCurrentLimit = 35;
-        public static final int drivePeakCurrentLimit = 60;
+        public static final int drivePeakCurrentLimit = 55;
         public static final double drivePeakCurrentDuration = 0.1;
         public static final boolean driveEnableCurrentLimit = true;
 
         /* These values are used by the drive falcon to ramp in open loop and closed loop driving.
          * We found a small open loop ramp (0.25) helps with tread wear, tipping, etc */
         public static final double openLoopRamp = 0.25;
-        public static final double closedLoopRamp = 0.0;
+        public static final double closedLoopRamp = 0.1;
 
         /* Angle Motor PID Values */
         public static final double angleKP = chosenModule.angleKP;
