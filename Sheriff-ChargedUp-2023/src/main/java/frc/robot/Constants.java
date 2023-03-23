@@ -41,10 +41,10 @@ public final class Constants {
 
         public static Map<Node, ArmSetpoint> ArmMap = new HashMap<Node, ArmSetpoint>();
         static { //Gamepiece 1 is Cone, Gamepiece 2 is Cube
-            ArmMap.put(new Node(1, 1), new ArmSetpoint(0.8, 0.2));
+            ArmMap.put(new Node(1, 1), new ArmSetpoint(0.8, 1.5));
             ArmMap.put(new Node(2, 1), new ArmSetpoint(2.45, 1.7));
             ArmMap.put(new Node(3, 1), new ArmSetpoint(2.9, 4.8));
-            ArmMap.put(new Node(4, 1), new ArmSetpoint(2.55, 0.2));
+            ArmMap.put(new Node(4, 1), new ArmSetpoint(2.65, 0.2));
             ArmMap.put(new Node(1, 2), new ArmSetpoint(0.8, 0.2));
             ArmMap.put(new Node(2, 2), new ArmSetpoint(2.25, 1.7));
             ArmMap.put(new Node(3, 2), new ArmSetpoint(2.7, 4.8));

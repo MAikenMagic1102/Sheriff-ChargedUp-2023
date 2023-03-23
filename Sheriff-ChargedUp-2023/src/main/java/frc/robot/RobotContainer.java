@@ -65,7 +65,7 @@ public class RobotContainer {
     private final Arm arm = new Arm();
     private final Intake intake = new Intake();
     private final CubeKicker cubekicker = new CubeKicker();
-    private final Vision eyes = new Vision(s_Swerve);
+    //private final Vision eyes = new Vision(s_Swerve);
 
     private SendableChooser<Command> m_autoChooser = new SendableChooser<>();
 
@@ -77,7 +77,7 @@ public class RobotContainer {
 
         m_autoChooser.addOption("BLUE 1 Cube AqCube Balance", new AutoBlue1CubeHalfBalance(s_Swerve, arm, intake, cubekicker));
         m_autoChooser.addOption("BLUE 2 Cube Balance" , new AutoBlue2CubesBalance(s_Swerve, arm, intake, cubekicker));
-        m_autoChooser.addOption("1 Cube", new CubeBalance(s_Swerve, arm, intake, cubekicker, eyes));
+        //m_autoChooser.addOption("1 Cube", new CubeBalance(s_Swerve, arm, intake, cubekicker, eyes));
         m_autoChooser.addOption("RED 2 Cube Balance", new AutoRed2CubesBalance(s_Swerve, arm, intake, cubekicker));
         m_autoChooser.addOption("RED 1 Cube AqCube Balance", new AutoRed1CubeHalfBalance(s_Swerve, arm, intake, cubekicker));
         m_autoChooser.addOption("RED 3 Cube", new AutoRed3Cube(s_Swerve, arm, intake, cubekicker));

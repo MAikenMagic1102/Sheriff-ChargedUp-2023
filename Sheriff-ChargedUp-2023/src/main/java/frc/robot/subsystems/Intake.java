@@ -56,8 +56,8 @@ public class Intake extends SubsystemBase {
     PIDIntake1 = leftIntake.getPIDController();
     PIDIntake2 = rightIntake.getPIDController();
 
-    leftLimit = leftIntake.getForwardLimitSwitch(Type.kNormallyOpen);
-    rightLimit = rightIntake.getForwardLimitSwitch(Type.kNormallyOpen);
+    leftLimit = leftIntake.getForwardLimitSwitch(Type.kNormallyClosed);
+    rightLimit = rightIntake.getForwardLimitSwitch(Type.kNormallyClosed);
 
     leftLimit.enableLimitSwitch(false);
     rightLimit.enableLimitSwitch(false);
@@ -87,18 +87,18 @@ public class Intake extends SubsystemBase {
 
   public void setholdPosition(){
     if(keepHold){
-        if(leftLimit.isPressed() || rightLimit.isPressed()){
-          PIDIntake1.setReference(0.2, ControlType.kDutyCycle);
-          PIDIntake2.setReference(0.2, ControlType.kDutyCycle);
+        if(!leftLimit.isPressed() && GamePiece.getGamePiece() == GamePieceType.Cube){
+          PIDIntake1.setReference(0.05, ControlType.kDutyCycle);
+          PIDIntake2.setReference(0.05, ControlType.kDutyCycle);
         }else{
           PIDIntake1.setReference(0.6, ControlType.kDutyCycle);
           PIDIntake2.setReference(0.6, ControlType.kDutyCycle);
         }
 
-        if(leftLimit.isPressed() || rightLimit.isPressed()){
+        if(!leftLimit.isPressed() || GamePiece.getGamePiece() == GamePieceType.Cone){
           hRollerIntake.set(0.0);
         }else{
-          hRollerIntake.set(0.6);
+            hRollerIntake.set(0.6);
         }
     }else{
       PIDIntake1.setReference(0.0, ControlType.kDutyCycle);
@@ -115,9 +115,9 @@ public class Intake extends SubsystemBase {
   }
 
   public void intakeOut(){
-    PIDIntake1.setReference(-0.1, ControlType.kDutyCycle);
-    PIDIntake2.setReference(-0.1, ControlType.kDutyCycle);
-    hRollerIntake.set(-0.1);
+    PIDIntake1.setReference(-0.2, ControlType.kDutyCycle);
+    PIDIntake2.setReference(-0.2, ControlType.kDutyCycle);
+    hRollerIntake.set(-0.2);
     keepHold = false;
   }
 
@@ -129,7 +129,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean getHasGamepiece(){
-    if(keepHold && (intake1Enc.getVelocity() < 2000 || intake2Enc.getVelocity() < 2000)){
+    if(keepHold && (intake1Enc.getVelocity() < 2000 || intake2Enc.getVelocity() < 2000 || !leftLimit.isPressed())){
       hasGamepiece = true;
     }else{
       hasGamepiece = false;
@@ -160,6 +160,9 @@ public class Intake extends SubsystemBase {
         }
       }
     }
+
+    SmartDashboard.putBoolean("LeftIntake Limit", leftLimit.isPressed());
+    SmartDashboard.putBoolean("RightIntake Limit", rightLimit.isPressed());
     SmartDashboard.putBoolean("Has Gamepiece", getHasGamepiece());
   }
 }

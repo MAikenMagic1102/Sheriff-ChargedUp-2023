@@ -86,6 +86,11 @@ public class Swerve extends SubsystemBase {
                 } 
             }
         }
+
+        public void drive(ChassisSpeeds speeds){
+            SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(speeds);
+            setModuleStates(swerveModuleStates);
+        }
     
         public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
             SwerveModuleState[] swerveModuleStates =

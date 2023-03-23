@@ -64,22 +64,14 @@ public class Vision extends SubsystemBase {
     // This method will be called once per scheduler run
 
     if(DriverStation.getAlliance()==Alliance.Blue){
-        Pose2d blueLeftBotPose = LimelightHelpers.getBotPose2d_wpiBlue(Constants.Limelight.left);
-        Pose2d blueRightBotPose = LimelightHelpers.getBotPose2d_wpiBlue(Constants.Limelight.right);
+        var blueLeftResult = LimelightHelpers.getLatestResults(Constants.Limelight.left).targetingResults;
+        var blueRightResult = LimelightHelpers.getLatestResults(Constants.Limelight.right).targetingResults;
 
-        double leftLatency_tl = LimelightHelpers.getLatency_Pipeline(Constants.Limelight.left);
-        double leftLatency_tc = LimelightHelpers.getLatency_Capture(Constants.Limelight.left);
-        double leftTimestamp = Timer.getFPGATimestamp() - (leftLatency_tl/1000.0) - (leftLatency_tc/1000.0);
+        Pose2d blueLeftBotPose = blueLeftResult.getBotPose2d_wpiBlue();
+        Pose2d blueRightBotPose = blueRightResult.getBotPose2d_wpiBlue();
 
-        double rightLatency_tl = LimelightHelpers.getLatency_Pipeline(Constants.Limelight.right);
-        double rightLatency_tc = LimelightHelpers.getLatency_Capture(Constants.Limelight.right);
-        double rightTimestamp = Timer.getFPGATimestamp() - (rightLatency_tl/1000.0) - (rightLatency_tc/1000.0);
-
-        // Pose2d blueLeftBotNoRot = new Pose2d(new Translation2d(blueLeftBotPose.getX(), blueLeftBotPose.getY()),
-        // swerve.getYaw());
-
-        // Pose2d blueRightBotNoRot = new Pose2d(new Translation2d(blueRightBotPose.getX(), blueRightBotPose.getY()),
-        // swerve.getYaw());
+        double leftTimestamp = Timer.getFPGATimestamp() - (blueLeftResult.latency_capture/1000.0) - (blueLeftResult.latency_pipeline/1000.0);
+        double rightTimestamp = Timer.getFPGATimestamp() - (blueRightResult.latency_capture/1000.0) - (blueRightResult.latency_pipeline/1000.0);
 
         if(isInMap(blueLeftBotPose)){
           leftCam.setRobotPose(blueLeftBotPose);
@@ -94,20 +86,28 @@ public class Vision extends SubsystemBase {
         }
     }
 
-    // if(DriverStation.getAlliance()==Alliance.Red){
-    //     var redLeftBotPose = LimelightHelpers.getBotPose2d_wpiRed(Constants.Limelight.left);
-    //     var redRightBotPose = LimelightHelpers.getBotPose2d_wpiRed(Constants.Limelight.right);
+    if(DriverStation.getAlliance()==Alliance.Red){
+        var redLeftResult = LimelightHelpers.getLatestResults(Constants.Limelight.left).targetingResults;
+        var redRightResult = LimelightHelpers.getLatestResults(Constants.Limelight.right).targetingResults;
 
-    //     leftCam.setRobotPose(redLeftBotPose);
-    //     rightCam.setRobotPose(redRightBotPose);
+        Pose2d redLeftBotPose = redLeftResult.getBotPose2d_wpiRed();
+        Pose2d redRightBotPose = redRightResult.getBotPose2d_wpiRed();
 
+        double leftTimestamp = Timer.getFPGATimestamp() - (redLeftResult.latency_capture/1000.0) - (redLeftResult.latency_pipeline/1000.0);
+        double rightTimestamp = Timer.getFPGATimestamp() - (redRightResult.latency_capture/1000.0) - (redRightResult.latency_pipeline/1000.0);
 
-    //     poseEst.addVisionMeasurement(redLeftBotPose, LimelightHelpers.getLatency_Capture(Constants.Limelight.left));
-    //     //swerve.resetOdometry(redLeftBotPose);
-
-    //     poseEst.addVisionMeasurement(redRightBotPose, LimelightHelpers.getLatency_Capture(Constants.Limelight.right));
-    //     //swerve.resetOdometry(redRightBotPose);
-    // }
+        if(isInMap(redLeftBotPose)){
+          leftCam.setRobotPose(redLeftBotPose);
+          poseEst.addVisionMeasurement(redLeftBotPose, leftTimestamp);
+          SmartDashboard.putNumber("Left Timestamp", leftTimestamp);
+        }
+        
+        if(isInMap(redRightBotPose)){
+          rightCam.setRobotPose(redRightBotPose);
+          poseEst.addVisionMeasurement(redRightBotPose, rightTimestamp);
+          SmartDashboard.putNumber("Right Timestamp", rightTimestamp);
+        }
+    }
 
     poseEst.update(swerve.getYaw(), swerve.getModulePositions());
 
