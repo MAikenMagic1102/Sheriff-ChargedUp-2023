@@ -12,17 +12,17 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive.Swerve;
 import frc.robot.subsystems.Vision.Vision;
 
-public class PIDdriveToPoint extends CommandBase {
+public class PIDdriveToNearestGrid extends CommandBase {
   private final Swerve swerve;
-  private final Pose2d target;
+  private Pose2d target;
 
-  private final PIDController xController = new PIDController( 1.9, 0, 0);
-  private final PIDController yController = new PIDController(1.9, 0, 0);
+  private final PIDController xController = new PIDController(3, 0, 0);
+  private final PIDController yController = new PIDController(3, 0, 0);
   private final PIDController thetaController = new PIDController(3, 0, 0);
   /** Creates a new PIDdriveToPoint. */
-  public PIDdriveToPoint(Swerve swerve, Pose2d target) {
+  public PIDdriveToNearestGrid(Swerve swerve) {
     this.swerve = swerve;
-    this.target = target;
+    this.target = new Pose2d();
 
     xController.setTolerance(0.1);
     yController.setTolerance(0.1);
@@ -33,9 +33,12 @@ public class PIDdriveToPoint extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    target = swerve.getNearestGridPose();
+
     xController.setSetpoint(target.getX());
     yController.setSetpoint(target.getY());
     thetaController.setSetpoint(target.getRotation().getRadians());
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.

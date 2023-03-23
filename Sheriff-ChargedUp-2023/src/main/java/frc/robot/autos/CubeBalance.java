@@ -36,13 +36,12 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class CubeBalance extends SequentialCommandGroup {
-    public CubeBalance (Swerve s_Swerve, Arm a_Arm, Intake i_Intake, CubeKicker lilKick, Vision eyes){
+    public CubeBalance (Swerve s_Swerve, Arm a_Arm, Intake i_Intake, CubeKicker lilKick){
         PathPlannerTrajectory test = PathPlanner.loadPath("1102BalanceOnly", 2.0, 1.5);
             addRequirements(s_Swerve, a_Arm, i_Intake);
             addCommands(
                 new ParallelCommandGroup(
                     new SequentialCommandGroup(
-                        new InstantCommand(() -> eyes.resetPathPose(test)),
                         new InstantCommand(() -> lilKick.fire()),
                         new WaitCommand(0.3),
                         new InstantCommand(() -> lilKick.home()),

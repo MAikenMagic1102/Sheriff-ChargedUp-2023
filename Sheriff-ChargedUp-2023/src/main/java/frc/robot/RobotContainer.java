@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -65,7 +68,6 @@ public class RobotContainer {
     private final Arm arm = new Arm();
     private final Intake intake = new Intake();
     private final CubeKicker cubekicker = new CubeKicker();
-    //private final Vision eyes = new Vision(s_Swerve);
 
     private SendableChooser<Command> m_autoChooser = new SendableChooser<>();
 
@@ -77,7 +79,7 @@ public class RobotContainer {
 
         m_autoChooser.addOption("BLUE 1 Cube AqCube Balance", new AutoBlue1CubeHalfBalance(s_Swerve, arm, intake, cubekicker));
         m_autoChooser.addOption("BLUE 2 Cube Balance" , new AutoBlue2CubesBalance(s_Swerve, arm, intake, cubekicker));
-        //m_autoChooser.addOption("1 Cube", new CubeBalance(s_Swerve, arm, intake, cubekicker, eyes));
+        m_autoChooser.addOption("1 Cube", new CubeBalance(s_Swerve, arm, intake, cubekicker));
         m_autoChooser.addOption("RED 2 Cube Balance", new AutoRed2CubesBalance(s_Swerve, arm, intake, cubekicker));
         m_autoChooser.addOption("RED 1 Cube AqCube Balance", new AutoRed1CubeHalfBalance(s_Swerve, arm, intake, cubekicker));
         m_autoChooser.addOption("RED 3 Cube", new AutoRed3Cube(s_Swerve, arm, intake, cubekicker));
@@ -96,8 +98,7 @@ public class RobotContainer {
                 driver.y(), //face away
                 driver.b(), // face right
                 driver.a(), //face towards
-                driver.x(), //face left
-                driver.rightTrigger()
+                driver.x() //face left
             )
         );
 
@@ -118,7 +119,7 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        
+        driver.povDown().whileTrue(new ClosestScore(s_Swerve, arm));
         driver.povUp().onTrue((new InstantCommand(() -> s_Swerve.zeroGyro())));
         driver.start().whileTrue(Commands.run(s_Swerve::AutoBalance, s_Swerve).andThen(s_Swerve::stopDrive, s_Swerve));
 

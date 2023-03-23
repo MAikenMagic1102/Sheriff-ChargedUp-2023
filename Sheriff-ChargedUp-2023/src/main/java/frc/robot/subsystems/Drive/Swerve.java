@@ -1,7 +1,9 @@
 package frc.robot.subsystems.Drive;
 
+import frc.lib.util.GamePiece;
+import frc.lib.util.GamePiece.GamePieceType;
 import frc.robot.Constants;
-
+import frc.robot.subsystems.Vision.Vision;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -27,13 +29,15 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Swerve extends SubsystemBase {
-    public SwerveDriveOdometry swerveOdometry;
-    public SwerveModule[] mSwerveMods;
-    public Pigeon2 m_gyro;
+        private SwerveDriveOdometry swerveOdometry;
+        private SwerveModule[] mSwerveMods;
+        private Pigeon2 m_gyro;
 
-        public Field2d m_field;
+        private Field2d m_field;
         private PIDController m_balancePID = new PIDController(Constants.Swerve.GAINS_BALANCE.kP, Constants.Swerve.GAINS_BALANCE.kI, Constants.Swerve.GAINS_BALANCE.kD);
-        public SwerveAutoBuilder m_autoBuilder;
+        private SwerveAutoBuilder m_autoBuilder;
+
+        private Vision eyes;
 
         public Swerve() {
             m_gyro = new Pigeon2(Constants.Swerve.pigeonID, Constants.Swerve.CANbus);
@@ -54,6 +58,7 @@ public class Swerve extends SubsystemBase {
             resetModulesToAbsolute();
     
             swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions());
+            eyes = new Vision(this);
         }
     
         @Override
@@ -72,6 +77,7 @@ public class Swerve extends SubsystemBase {
             // SmartDashboard.putNumber("Robot Roll", getRoll());
     
             SmartDashboard.putString("Alliance Color", DriverStation.getAlliance().name());
+            SmartDashboard.putNumber("Swerve Estimated Pos", eyes.getCurrentPose().getY());
     
             swerveOdometry.update(getYaw(), getModulePositions()); 
     
@@ -134,6 +140,10 @@ public class Swerve extends SubsystemBase {
             
             return swerveOdometry.getPoseMeters();
         }
+
+        public Pose2d getVisionPose(){
+            return eyes.getCurrentPose();
+        }
     
         public void resetOdometry(Pose2d pose) {
             swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
@@ -182,6 +192,34 @@ public class Swerve extends SubsystemBase {
                 mod.resetToAbsolute();
             }
         }
+
+        public Pose2d getNearestGridPose(){
+            double currentY = this.getVisionPose().getY();
+            double closestY = Constants.Swerve.cubeYcoord[0];
+            if(GamePiece.getGamePiece() == GamePieceType.Cube){
+              if(currentY != -999){
+                for(int i = 1; i < Constants.Swerve.cubeYcoord.length; i++){
+                  if(Math.abs(Constants.Swerve.cubeYcoord[i] - currentY) < Math.abs(closestY - currentY)){
+                    System.out.println("Closest Y Coord: " + closestY);
+                    closestY = Constants.Swerve.cubeYcoord[i];
+                  }
+                }
+              }
+            }
+
+            if(GamePiece.getGamePiece() == GamePieceType.Cone){
+                if(currentY != -999){
+                  for(int i = 1; i < Constants.Swerve.coneYcoord.length; i++){
+                    if(Math.abs(Constants.Swerve.coneYcoord[i] - currentY) < Math.abs(closestY - currentY)){
+                      System.out.println("Closest Y Coord: " + closestY);
+                      closestY = Constants.Swerve.coneYcoord[i];
+                    }
+                  }
+                }
+              }
+
+            return new Pose2d(new Translation2d(2.3, closestY), Rotation2d.fromDegrees(180));
+        }
     
         public void AutoBalance(){
             m_balancePID.setTolerance(Constants.Swerve.BALANCE_TOLLERANCE);
@@ -206,6 +244,7 @@ public class Swerve extends SubsystemBase {
                    if(isFirstPath){
                         PathPlannerTrajectory transformed = PathPlannerTrajectory.transformTrajectoryForAlliance(path1, DriverStation.getAlliance());
                         resetOdometry(transformed.getInitialHolonomicPose());
+                        eyes.resetPathPose(path1);
                    }
                  }),
                  new PPSwerveControllerCommand(

@@ -42,7 +42,7 @@ public class TeleopSwerveWin extends CommandBase {
     public TeleopSwerveWin(Swerve swerve, DoubleSupplier xSup, DoubleSupplier ySup, 
                         DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, 
                         BooleanSupplier halfSpeed, BooleanSupplier quarterSpeed, 
-                        BooleanSupplier zero, BooleanSupplier ninety, BooleanSupplier oneEighty, BooleanSupplier twoSeventy, BooleanSupplier limelightmode){
+                        BooleanSupplier zero, BooleanSupplier ninety, BooleanSupplier oneEighty, BooleanSupplier twoSeventy){
         m_Swerve = swerve;
         this.ySup = ySup;
         this.xSup = xSup;
@@ -53,7 +53,6 @@ public class TeleopSwerveWin extends CommandBase {
         m_180 = oneEighty;
         m_90 = ninety;
         m_270 = twoSeventy;
-        m_limelightmode = limelightmode;
         addRequirements(m_Swerve);
         m_speedChooser = new SendableChooser<Double>();
         m_speedChooser.addOption("100%", 1.0);
@@ -129,11 +128,6 @@ public class TeleopSwerveWin extends CommandBase {
             } 
         }
 
-        if(m_limelightmode.getAsBoolean()){
-            LimelightHelpers.setPipelineIndex("limelight-vtwotop", 1);
-            yVal = (LimelightHelpers.getTX("limelight-vtwotop") * 0.04) * (0.25);
-        }
-        
         m_Swerve.drive(
             new Translation2d(xVal, yVal).times(Constants.Swerve.maxSpeed), 
             rotationVal * Constants.Swerve.maxAngularVelocity * 0.9, 

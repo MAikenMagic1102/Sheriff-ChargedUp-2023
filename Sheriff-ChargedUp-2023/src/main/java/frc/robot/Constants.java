@@ -69,6 +69,9 @@ public final class Constants {
     }
 
     public static final class Swerve {
+        public static final double[] cubeYcoord = {1.1, 2.78, 4.38};
+        public static final double[] coneYcoord = {0.0, 0.0, 0.0, 0.0, 3.88, 0.0};
+
         public static final int pigeonID = 9;
         public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 

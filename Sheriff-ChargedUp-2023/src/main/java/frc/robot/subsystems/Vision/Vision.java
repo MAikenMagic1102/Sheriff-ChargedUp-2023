@@ -23,7 +23,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Drive.Swerve;
 
 
-public class Vision extends SubsystemBase {
+public class Vision {
   private final Swerve swerve;
 
   //increase values to trust the drivetrain less (x,y,theta)
@@ -57,9 +57,20 @@ public class Vision extends SubsystemBase {
       new Pose2d(),
       stateStdDevs,
       visionStdDevs);
+
+      vision_thread();
   }
 
-  @Override
+  public void vision_thread(){
+    try{
+      new Thread(() -> {
+        while(true){
+          periodic();
+        }
+      }).start();
+    }catch(Exception e){}
+  }
+
   public void periodic() {
     // This method will be called once per scheduler run
 
