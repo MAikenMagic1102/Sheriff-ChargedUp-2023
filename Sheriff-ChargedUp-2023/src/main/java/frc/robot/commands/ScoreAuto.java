@@ -16,7 +16,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Arm.Arm;
 import frc.robot.subsystems.Arm.ArmSetpoint;
 
-public class Score extends CommandBase {
+public class ScoreAuto extends CommandBase {
   /** Creates a new ArmToNode. */
   private int level = 0;
   private Arm arm;
@@ -29,7 +29,7 @@ public class Score extends CommandBase {
   private boolean isFinished = false;
   private boolean scored = false;
 
-  public Score(Arm arm, Intake intake) {
+  public ScoreAuto(Arm arm, Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.arm = arm;
     this.intake = intake;
@@ -59,14 +59,14 @@ public class Score extends CommandBase {
 
 
     if(Math.abs((lowerArmCurrentSetpoint - 0.3) - arm.getLowerArmPosition() ) < 0.2){
-      intake.intakeOut();
+      intake.intakeOutFast();
       scored = true;
       //System.out.println("Lower Arm is set to : " + lowerArmSetpoint);
     }
 
 
     if(scored){
-      Timer.delay(0.3);
+      Timer.delay(0.2);
       isFinished = true;
     } 
 

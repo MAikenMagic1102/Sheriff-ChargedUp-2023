@@ -35,12 +35,11 @@ public class TeleopSwerveWin extends CommandBase {
      * @param xSup
      * @param ySup
      * @param rotationSup
-     * @param robotCentricSup
      * @param halfSpeed
      * @param quarterSpeed
      */
     public TeleopSwerveWin(Swerve swerve, DoubleSupplier xSup, DoubleSupplier ySup, 
-                        DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, 
+                        DoubleSupplier rotationSup, 
                         BooleanSupplier halfSpeed, BooleanSupplier quarterSpeed, 
                         BooleanSupplier zero, BooleanSupplier ninety, BooleanSupplier oneEighty, BooleanSupplier twoSeventy){
         m_Swerve = swerve;
@@ -73,11 +72,6 @@ public class TeleopSwerveWin extends CommandBase {
 
     @Override
     public void execute() {
-        if(!m_limelightmode.getAsBoolean()){
-            LimelightHelpers.setPipelineIndex("limelight-vtwotop", 0);
-        }
-
-
         /* Get Values, Deadband*/
         boolean rotateWithButton = m_0.getAsBoolean() || m_90.getAsBoolean() || m_180.getAsBoolean() || m_270.getAsBoolean();
         xVal = MathUtil.applyDeadband(xSup.getAsDouble() * m_speedChooser.getSelected() , Constants.stickDeadband);

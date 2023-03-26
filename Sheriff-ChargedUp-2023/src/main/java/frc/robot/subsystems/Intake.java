@@ -108,31 +108,41 @@ public class Intake extends SubsystemBase {
   }
 
   public void intakeIn(){
-    PIDIntake1.setReference(0.6, ControlType.kDutyCycle);
-    PIDIntake2.setReference(0.6, ControlType.kDutyCycle);
-    hRollerIntake.set(0.6);
+      PIDIntake1.setReference(0.6, ControlType.kDutyCycle);
+      PIDIntake2.setReference(0.6, ControlType.kDutyCycle);
+      hRollerIntake.set(0.6);
     keepHold = true;
   }
 
   public void intakeOut(){
     PIDIntake1.setReference(-0.2, ControlType.kDutyCycle);
     PIDIntake2.setReference(-0.2, ControlType.kDutyCycle);
-    hRollerIntake.set(-0.2);
+    hRollerIntake.set(0.0);
     keepHold = false;
   }
 
   public void intakeOutFast(){
-    PIDIntake1.setReference(-0.6, ControlType.kDutyCycle);
-    PIDIntake2.setReference(-0.6, ControlType.kDutyCycle);
-    hRollerIntake.set(-0.6);
+    PIDIntake1.setReference(-0.35, ControlType.kDutyCycle);
+    PIDIntake2.setReference(-0.35, ControlType.kDutyCycle);
+    hRollerIntake.set(0.0);
     keepHold = false;
   }
 
+  public void intakeStop(){
+    PIDIntake1.setReference(0.05, ControlType.kDutyCycle);
+    PIDIntake2.setReference(0.05, ControlType.kDutyCycle);
+    hRollerIntake.set(0.0);
+  }
+
   public boolean getHasGamepiece(){
-    if(keepHold && (intake1Enc.getVelocity() < 2000 || intake2Enc.getVelocity() < 2000 || !leftLimit.isPressed())){
+    if(!leftLimit.isPressed() && GamePiece.getGamePiece() == GamePieceType.Cube){
       hasGamepiece = true;
     }else{
-      hasGamepiece = false;
+      if(keepHold && (intake1Enc.getVelocity() < 2000 || intake2Enc.getVelocity() < 2000) && GamePiece.getGamePiece() == GamePieceType.Cone){
+        hasGamepiece = true;
+      }else{
+        hasGamepiece = false;
+      }
     }
     
     return hasGamepiece;

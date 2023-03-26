@@ -53,7 +53,7 @@ public class Arm extends SubsystemBase {
 
 
     //From Lower to Higher
-    lowerConfig.Slot0.kP = 200; // An error of 1 rotation = 200 amps
+    lowerConfig.Slot0.kP = 220; // An error of 1 rotation = 200 amps
     lowerConfig.Slot0.kI = 80; //
     lowerConfig.Slot0.kD = 40; // A change of 1 rotation per second results in 40 amps output
 
@@ -69,7 +69,7 @@ public class Arm extends SubsystemBase {
     lowerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.06;
 
     //From Lower to Higher
-    upperConfig.Slot0.kP = 200; // An error of 1 rotation = 80 amps
+    upperConfig.Slot0.kP = 220; // An error of 1 rotation = 80 amps
     upperConfig.Slot0.kI = 80;
     upperConfig.Slot0.kD = 40; // A change of 1 rotation per second results in 2 amps output
 

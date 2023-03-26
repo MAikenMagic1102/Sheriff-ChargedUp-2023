@@ -9,6 +9,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
+import javax.swing.GroupLayout.Alignment;
+
+import org.opencv.core.Mat;
+
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
@@ -22,6 +26,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -194,31 +199,70 @@ public class Swerve extends SubsystemBase {
         }
 
         public Pose2d getNearestGridPose(){
+            //Check the cameras to see where we are
             double currentY = this.getVisionPose().getY();
-            double closestY = Constants.Swerve.cubeYcoord[0];
+            double closestY = 0;
+
             if(GamePiece.getGamePiece() == GamePieceType.Cube){
-              if(currentY != -999){
-                for(int i = 1; i < Constants.Swerve.cubeYcoord.length; i++){
-                  if(Math.abs(Constants.Swerve.cubeYcoord[i] - currentY) < Math.abs(closestY - currentY)){
-                    System.out.println("Closest Y Coord: " + closestY);
-                    closestY = Constants.Swerve.cubeYcoord[i];
-                  }
+                //set the default starting position for Y
+                if(DriverStation.getAlliance() == Alliance.Blue){
+                     closestY = Constants.Swerve.BLUEcubeYcoord[0];
+                    for(int i = 1; i < Constants.Swerve.BLUEcubeYcoord.length; i++){
+                        if(Math.abs(Constants.Swerve.BLUEcubeYcoord[i] - currentY) < Math.abs(closestY - currentY)){
+                            System.out.println("Closest Y Coord: " + closestY);
+                            closestY = Constants.Swerve.BLUEcubeYcoord[i];
+                        }
+                    }
+                    return new Pose2d(new Translation2d(1.85, closestY), Rotation2d.fromDegrees(180));
                 }
-              }
+                
+                //Here we will write Red
+                if(DriverStation.getAlliance() == Alliance.Red){
+                    closestY = Constants.Swerve.REDcubeYcoord[0];
+                    for(int i = 1; i< Constants.Swerve.REDcubeYcoord.length; i++){
+                        if(Math.abs(Constants.Swerve.REDcubeYcoord[i] - currentY) < Math.abs(closestY - currentY)){
+                            closestY = Constants.Swerve.REDcubeYcoord[i];
+                        }
+                    }
+                    return new Pose2d(new Translation2d(1.85, closestY), Rotation2d.fromDegrees(180));
+                }           
             }
 
             if(GamePiece.getGamePiece() == GamePieceType.Cone){
-                if(currentY != -999){
-                  for(int i = 1; i < Constants.Swerve.coneYcoord.length; i++){
-                    if(Math.abs(Constants.Swerve.coneYcoord[i] - currentY) < Math.abs(closestY - currentY)){
-                      System.out.println("Closest Y Coord: " + closestY);
-                      closestY = Constants.Swerve.coneYcoord[i];
-                    }
-                  }
-                }
-              }
+                //set the default starting position for Y
+                if(DriverStation.getAlliance() == Alliance.Blue){
+                    closestY = Constants.Swerve.BLUEconeYcoord[0];
+                   for(int i = 1; i < Constants.Swerve.BLUEconeYcoord.length; i++){
+                       if(Math.abs(Constants.Swerve.BLUEconeYcoord[i] - currentY) < Math.abs(closestY - currentY)){
+                           System.out.println("Closest Y Coord: " + closestY);
+                           closestY = Constants.Swerve.BLUEconeYcoord[i];
+                       }
+                   }
+                   return new Pose2d(new Translation2d(1.85, closestY), Rotation2d.fromDegrees(180));
+               }
+               
+               //Here we will write Red
+               if(DriverStation.getAlliance() == Alliance.Red){
+                   closestY = Constants.Swerve.REDconeYcoord[0];
+                   for(int i = 1; i< Constants.Swerve.REDconeYcoord.length; i++){
+                       if(Math.abs(Constants.Swerve.REDconeYcoord[i] - currentY) < Math.abs(closestY - currentY)){
+                           closestY = Constants.Swerve.REDconeYcoord[i];
+                       }
+                   }
+                   return new Pose2d(new Translation2d(1.85, closestY), Rotation2d.fromDegrees(180));
+               }     
+            }
 
-            return new Pose2d(new Translation2d(2.3, closestY), Rotation2d.fromDegrees(180));
+            //Defaults to the middle-ish of the grid but this shouldn't happen
+            return new Pose2d(new Translation2d(2.3, 3.0), Rotation2d.fromDegrees(180));
+
+        }
+
+        public Pose2d getSubstationPose(){
+            if(DriverStation.getAlliance() == Alliance.Blue){
+                return Constants.Swerve.BLUEsubStation;
+            }   
+            return Constants.Swerve.REDsubStation;
         }
     
         public void AutoBalance(){
@@ -232,7 +276,7 @@ public class Swerve extends SubsystemBase {
         }
     
         public SequentialCommandGroup followTrajectoryCommand(PathPlannerTrajectory path1, boolean isFirstPath) {
-            PIDController thetaController = new PIDController(3.0, 0, 0);
+            PIDController thetaController = new PIDController(3.5, 0, 0);
             PIDController xController = new PIDController(1.3, 0, 0);
             PIDController yController = new PIDController(1.3, 0, 0);
     

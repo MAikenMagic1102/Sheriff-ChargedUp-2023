@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive.Swerve;
 import frc.robot.subsystems.Vision.Vision;
 
-public class PIDdriveToNearestGrid extends CommandBase {
+public class PIDdriveToSubstation extends CommandBase {
   private final Swerve swerve;
   private Pose2d target;
 
@@ -20,7 +20,7 @@ public class PIDdriveToNearestGrid extends CommandBase {
   private final PIDController yController = new PIDController(1.9, 0, 0);
   private final PIDController thetaController = new PIDController(3, 0, 0);
   /** Creates a new PIDdriveToPoint. */
-  public PIDdriveToNearestGrid(Swerve swerve) {
+  public PIDdriveToSubstation(Swerve swerve) {
     this.swerve = swerve;
     this.target = new Pose2d();
 
@@ -33,7 +33,7 @@ public class PIDdriveToNearestGrid extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    target = swerve.getNearestGridPose();
+    target = swerve.getSubstationPose();
 
     xController.setSetpoint(target.getX());
     yController.setSetpoint(target.getY());

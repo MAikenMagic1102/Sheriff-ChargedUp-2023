@@ -6,7 +6,6 @@ import frc.robot.commands.ArmToNode;
 import frc.robot.commands.ArmToSetpoint;
 import frc.robot.commands.IntakeIn;
 import frc.robot.commands.Score;
-import frc.robot.commands.ScoreAuto;
 import frc.robot.subsystems.CubeKicker;
 import frc.robot.subsystems.DigitalServo;
 import frc.robot.subsystems.Intake;
@@ -37,10 +36,10 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-public class AutoRed3Cube extends SequentialCommandGroup {
-    public AutoRed3Cube(Swerve s_Swerve, Arm a_Arm, Intake i_Intake, CubeKicker lilKick){
-        PathPlannerTrajectory test = PathPlanner.loadPath("1102TestRed", 5.0, 3.0);
-        PathPlannerTrajectory testAq = PathPlanner.loadPath("1102TestAquireGamepiece", 2.0, 1.5);
+public class AutoBlue3Cube extends SequentialCommandGroup {
+    public AutoBlue3Cube(Swerve s_Swerve, Arm a_Arm, Intake i_Intake, CubeKicker lilKick){
+        PathPlannerTrajectory test = PathPlanner.loadPath("1102TestBlue", 5.0, 3.0);
+        PathPlannerTrajectory testAq = PathPlanner.loadPath("1102TestAquireGamepiece", 3.0, 2.5);
         PathPlannerTrajectory test2 = PathPlanner.loadPath("1102TestReturn", 5.0, 3.0);
         PathPlannerTrajectory testbackoff = PathPlanner.loadPath("1102Backoff", 5.0, 3.0);
         PathPlannerTrajectory test3 = PathPlanner.loadPath("1102ThirdGamePiece", 5.0, 3.0);
@@ -51,16 +50,19 @@ public class AutoRed3Cube extends SequentialCommandGroup {
                 new ParallelCommandGroup(
                     new SequentialCommandGroup(
                         new InstantCommand(() -> lilKick.fire()),
-                        new InstantCommand(() -> a_Arm.initArm()),
                         new WaitCommand(0.3),
                         s_Swerve.followTrajectoryCommand(test, true).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD).alongWith(new IntakeIn(i_Intake).alongWith(new InstantCommand(() -> lilKick.home())))),
-                        s_Swerve.followTrajectoryCommand(test2, false).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.SUBSTATION)),
-                        new ArmToNode(a_Arm, 2),
-                        new ScoreAuto(a_Arm, i_Intake),
+                        s_Swerve.followTrajectoryCommand(testAq, false),
+                        new IntakeIn(i_Intake),
+                        s_Swerve.followTrajectoryCommand(test2, false).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.STOW)),
+                        new ArmToNode(a_Arm, 1),
+                        new Score(a_Arm, i_Intake),
+                        new ArmToSetpoint(a_Arm, Constants.Arm.STOW),
+                        s_Swerve.followTrajectoryCommand(testbackoff, false),
                         s_Swerve.followTrajectoryCommand(test3, false).alongWith(new IntakeIn(i_Intake).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD))),
-                        s_Swerve.followTrajectoryCommand(test4, false).alongWith(new IntakeIn(i_Intake).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.SUBSTATION))),
-                        new ArmToNode(a_Arm, 2),
-                        new ScoreAuto(a_Arm, i_Intake),
+                        s_Swerve.followTrajectoryCommand(test4, false).alongWith(new IntakeIn(i_Intake).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.STOW))),
+                        new ArmToNode(a_Arm, 1),
+                        new Score(a_Arm, i_Intake),
                         new ArmToSetpoint(a_Arm, Constants.Arm.STOW)
                     ))
     

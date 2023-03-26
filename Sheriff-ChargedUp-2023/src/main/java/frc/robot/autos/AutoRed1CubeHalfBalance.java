@@ -45,6 +45,7 @@ public class AutoRed1CubeHalfBalance extends SequentialCommandGroup {
                 new ParallelCommandGroup(
                     new SequentialCommandGroup(
                         new InstantCommand(() -> lilKick.fire()),
+                        new InstantCommand(() -> a_Arm.initArm()),
                         new WaitCommand(0.3),
                         s_Swerve.followTrajectoryCommand(test, true).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD).alongWith(new InstantCommand(() -> i_Intake.intakeIn()).alongWith(new InstantCommand(() -> lilKick.home())))),
                         s_Swerve.followTrajectoryCommand(testAq, false),
