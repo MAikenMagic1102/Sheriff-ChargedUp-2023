@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems.Vision;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.VecBuilder;
@@ -29,10 +32,7 @@ public class Vision {
   //increase values to trust the drivetrain less (x,y,theta)
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1,0.1, Units.degreesToRadians(0.1));
 
-  private static final Vector<N3> visionStdDevs = VecBuilder.fill(0.9,0.9, Units.degreesToRadians(0.9));
-  //Values tried for X/Y 0.1, 1, 3, 5, 10
-  //Values tried for Theta 0.1, 500 
-  //(I think we want to ignore the camera pose's angles since they will always be wrong compared to gyro)
+  private static final Vector<N3> visionStdDevs = VecBuilder.fill(0.9,0.9, 0.9);
 
   private final SwerveDrivePoseEstimator poseEst;
 
@@ -40,8 +40,8 @@ public class Vision {
   private final Field2d leftCam;
   private final Field2d rightCam;
 
-  private int leftTags = 0;
-  private int rightTags = 0;
+  private final Lock lock = new ReentrantLock();
+  
 
   /** Creates a new Vision. */
   public Vision(Swerve swerve) {
@@ -66,6 +66,12 @@ public class Vision {
       new Thread(() -> {
         while(true){
           periodic();
+          try {
+            Thread.sleep(20);
+          } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
         }
       }).start();
     }catch(Exception e){}
@@ -84,17 +90,19 @@ public class Vision {
         double leftTimestamp = Timer.getFPGATimestamp() - (blueLeftResult.latency_capture/1000.0) - (blueLeftResult.latency_pipeline/1000.0);
         double rightTimestamp = Timer.getFPGATimestamp() - (blueRightResult.latency_capture/1000.0) - (blueRightResult.latency_pipeline/1000.0);
 
-        if(isInMap(blueLeftBotPose)){
-          leftCam.setRobotPose(blueLeftBotPose);
+        if(blueLeftResult.targets_Fiducials.length > 0){
+          leftCam.setRobotPose(blueLeftBotPose.relativeTo(Constants.BlueOrigin));
           poseEst.addVisionMeasurement(blueLeftBotPose, leftTimestamp);
           SmartDashboard.putNumber("Left Timestamp", leftTimestamp);
         }
         
-        if(isInMap(blueRightBotPose)){
-          rightCam.setRobotPose(blueRightBotPose);
+        if(blueRightResult.targets_Fiducials.length > 0){
+          rightCam.setRobotPose(blueRightBotPose.relativeTo(Constants.BlueOrigin));
           poseEst.addVisionMeasurement(blueRightBotPose, rightTimestamp);
           SmartDashboard.putNumber("Right Timestamp", rightTimestamp);
         }
+
+        field2d.setRobotPose(getCurrentPose().relativeTo(Constants.BlueOrigin));
     }
 
     if(DriverStation.getAlliance()==Alliance.Red){
@@ -107,22 +115,22 @@ public class Vision {
         double leftTimestamp = Timer.getFPGATimestamp() - (redLeftResult.latency_capture/1000.0) - (redLeftResult.latency_pipeline/1000.0);
         double rightTimestamp = Timer.getFPGATimestamp() - (redRightResult.latency_capture/1000.0) - (redRightResult.latency_pipeline/1000.0);
 
-        if(isInMap(redLeftBotPose)){
-          leftCam.setRobotPose(redLeftBotPose);
+        if(redLeftResult.targets_Fiducials.length > 0){
+          leftCam.setRobotPose(redLeftBotPose.relativeTo(Constants.RedOrigin));
           poseEst.addVisionMeasurement(redLeftBotPose, leftTimestamp);
           SmartDashboard.putNumber("Left Timestamp", leftTimestamp);
         }
         
-        if(isInMap(redRightBotPose)){
-          rightCam.setRobotPose(redRightBotPose);
+        if(redRightResult.targets_Fiducials.length > 0){
+          rightCam.setRobotPose(redRightBotPose.relativeTo(Constants.RedOrigin));
           poseEst.addVisionMeasurement(redRightBotPose, rightTimestamp);
           SmartDashboard.putNumber("Right Timestamp", rightTimestamp);
         }
+
+        field2d.setRobotPose(getCurrentPose().relativeTo(Constants.RedOrigin));
     }
 
     poseEst.update(swerve.getYaw(), swerve.getModulePositions());
-
-    field2d.setRobotPose(getCurrentPose());
 
     SmartDashboard.putData("Field Pose Est", field2d);
     SmartDashboard.putData("Left CAM Field", leftCam);
@@ -139,6 +147,10 @@ public class Vision {
 
   public void resetFieldPosition(){
     this.setCurrentPose(new Pose2d());
+  }
+
+  public Pose2d getRightCamPose(){
+    return LimelightHelpers.getBotPose2d_wpiRed(Constants.Limelight.right);
   }
 
   //From Spectrum

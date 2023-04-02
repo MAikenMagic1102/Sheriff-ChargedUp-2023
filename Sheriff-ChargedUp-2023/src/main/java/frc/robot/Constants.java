@@ -22,6 +22,11 @@ public final class Constants {
     public static final int CANdleID = 31;
     public static final boolean tuningMode = true;
 
+    public static final long threadsleep = 20;
+
+    public static Pose2d BlueOrigin = new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0));
+    public static Pose2d RedOrigin = new Pose2d(new Translation2d(16.5, 8.0), Rotation2d.fromDegrees(180));
+
     public static final class Limelight{
         public static final String left = "limelight-newleft";
         public static final String right = "limelight-newrigh";
@@ -42,20 +47,20 @@ public final class Constants {
 
         public static Map<Node, ArmSetpoint> ArmMap = new HashMap<Node, ArmSetpoint>();
         static { //Gamepiece 1 is Cone, Gamepiece 2 is Cube
-            ArmMap.put(new Node(1, 1), new ArmSetpoint(0.8, 1.5));
-            ArmMap.put(new Node(2, 1), new ArmSetpoint(2.45, 1.7));
-            ArmMap.put(new Node(3, 1), new ArmSetpoint(2.9, 4.8));
-            ArmMap.put(new Node(4, 1), new ArmSetpoint(2.65, 0.2));
+            ArmMap.put(new Node(1, 1), new ArmSetpoint(0.85, 1.5));
+            ArmMap.put(new Node(2, 1), new ArmSetpoint(2.5, 1.7));
+            ArmMap.put(new Node(3, 1), new ArmSetpoint(2.95, 4.8));
+            ArmMap.put(new Node(4, 1), new ArmSetpoint(2.7, 0.6));
             ArmMap.put(new Node(1, 2), new ArmSetpoint(0.8, 0.6));
-            ArmMap.put(new Node(2, 2), new ArmSetpoint(2.25, 1.55));
-            ArmMap.put(new Node(3, 2), new ArmSetpoint(2.7, 4.8));
-            ArmMap.put(new Node(4, 2), new ArmSetpoint(2.45, 0.2));
+            ArmMap.put(new Node(2, 2), new ArmSetpoint(2.25, 1.5));
+            ArmMap.put(new Node(3, 2), new ArmSetpoint(2.7, 4.4));
+            ArmMap.put(new Node(4, 2), new ArmSetpoint(2.45, 0.6));
         }
 
         public static final double RETRACT = 0.1;
         public static final ArmSetpoint STOW = new ArmSetpoint(0.62, 0.1); 
-        public static final ArmSetpoint FLOORLOAD = new ArmSetpoint(0.74, 2.00); 
-        public static final ArmSetpoint SUBSTATION = new ArmSetpoint(2.45, 0.1);  
+        public static final ArmSetpoint FLOORLOAD = new ArmSetpoint(0.74, 1.95); 
+        public static final ArmSetpoint SUBSTATION = new ArmSetpoint(2.45, 0.3);  
 
     }
 
@@ -72,10 +77,10 @@ public final class Constants {
     public static final class Swerve {
         public static final double[] BLUEcubeYcoord = {1.2, 2.75, 4.31};
         public static final double[] BLUEconeYcoord = {0.55, 1.65, 2.25, 3.3, 3.95, 5};
-        public static final double[] REDcubeYcoord = {3.49, 5.2, 6.9};
-        public static final double[] REDconeYcoord = {3.17, 4.07, 4.6, 5.65, 6.4, 7.49};
+        public static final double[] REDcubeYcoord = {3.5, 5.1, 7.1};
+        public static final double[] REDconeYcoord = {3.00, 4.2, 4.6, 5.65, 6.1, 7.6};
 
-        public static final Pose2d REDsubStation = new Pose2d(new Translation2d(15.60, 1.80), Rotation2d.fromDegrees(0));
+        public static final Pose2d REDsubStation = new Pose2d(new Translation2d(15.60, 1.95), Rotation2d.fromDegrees(0));
         public static final Pose2d BLUEsubStation = new Pose2d(new Translation2d(15.60, 6.17), Rotation2d.fromDegrees(0));
 
         public static final int pigeonID = 9;

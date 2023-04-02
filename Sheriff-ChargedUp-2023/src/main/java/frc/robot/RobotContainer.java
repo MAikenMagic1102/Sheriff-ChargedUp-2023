@@ -120,14 +120,14 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.rightTrigger().whileTrue(new ClosestScore(s_Swerve, arm));
-        //driver.leftTrigger().whileTrue(new PIDdriveToSubstation(s_Swerve));
+        driver.leftTrigger().whileTrue(new PIDdriveToSubstation(s_Swerve));
 
         driver.povUp().onTrue((new InstantCommand(() -> s_Swerve.zeroGyro())));
         driver.start().whileTrue(Commands.run(s_Swerve::AutoBalance, s_Swerve).andThen(s_Swerve::stopDrive, s_Swerve));
 
         // driver.povLeft().onTrue(new InstantCommand(() -> servo.set(0)));
         // driver.povDown().onTrue(new InstantCommand(() -> servo.set(0.05)));
-        // driver.povRight().onTrue(new InstantCommand(() -> servo.set(0.3)));
+        driver.povRight().onTrue(new InstantCommand(() -> s_Swerve.setSwervetoRightCAM()));
         //operator.a().whileTrue((new RepeatCommand(new InstantCommand(() -> arm.setLowerArmSetPoint(2.0)))));
 
         //Start Button Pressed; Change Gamepiece

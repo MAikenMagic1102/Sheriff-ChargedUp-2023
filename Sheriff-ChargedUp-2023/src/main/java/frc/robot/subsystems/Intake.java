@@ -88,11 +88,17 @@ public class Intake extends SubsystemBase {
   public void setholdPosition(){
     if(keepHold){
         if(!leftLimit.isPressed() && GamePiece.getGamePiece() == GamePieceType.Cube){
-          PIDIntake1.setReference(0.05, ControlType.kDutyCycle);
-          PIDIntake2.setReference(0.05, ControlType.kDutyCycle);
+          PIDIntake1.setReference(0.02, ControlType.kDutyCycle);
+          PIDIntake2.setReference(0.02, ControlType.kDutyCycle);
         }else{
-          PIDIntake1.setReference(0.6, ControlType.kDutyCycle);
-          PIDIntake2.setReference(0.6, ControlType.kDutyCycle);
+          if(GamePiece.getGamePiece() == GamePieceType.Cone){
+            PIDIntake1.setReference(0.7, ControlType.kDutyCycle);
+            PIDIntake2.setReference(0.7, ControlType.kDutyCycle);
+          }else{
+            PIDIntake1.setReference(0.3, ControlType.kDutyCycle);
+            PIDIntake2.setReference(0.3, ControlType.kDutyCycle);
+          }
+
         }
 
         if(!leftLimit.isPressed() || GamePiece.getGamePiece() == GamePieceType.Cone){
@@ -124,7 +130,7 @@ public class Intake extends SubsystemBase {
   public void intakeOutFast(){
     PIDIntake1.setReference(-0.35, ControlType.kDutyCycle);
     PIDIntake2.setReference(-0.35, ControlType.kDutyCycle);
-    hRollerIntake.set(0.0);
+    hRollerIntake.set(-0.3);
     keepHold = false;
   }
 
@@ -151,14 +157,25 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // SmartDashboard.putNumber("Intake1 Target", leftPOS);
-    // SmartDashboard.putNumber("Intake2 Target", rightPOS);
-    // SmartDashboard.putNumber("Intake1 Error", intake1Enc.getPosition() - leftPOS);
-    // SmartDashboard.putNumber("Intake2 Error", intake2Enc.getPosition() - rightPOS);
-    // SmartDashboard.putNumber("Intake1 Pos", intake1Enc.getPosition());
-    // SmartDashboard.putNumber("Intake2 Pos", intake2Enc.getPosition());
-    SmartDashboard.putNumber("Intake1 Velocity", intake1Enc.getVelocity());
-    SmartDashboard.putNumber("Intake2 Velocity", intake2Enc.getVelocity());
+    if(Constants.tuningMode){
+      SmartDashboard.putNumber("Intake1 Target", leftPOS);
+      SmartDashboard.putNumber("Intake2 Target", rightPOS);
+      SmartDashboard.putNumber("Intake1 Error", intake1Enc.getPosition() - leftPOS);
+      SmartDashboard.putNumber("Intake2 Error", intake2Enc.getPosition() - rightPOS);
+      SmartDashboard.putNumber("Intake1 Pos", intake1Enc.getPosition());
+      SmartDashboard.putNumber("Intake2 Pos", intake2Enc.getPosition());
+      SmartDashboard.putNumber("Intake1 Velocity", intake1Enc.getVelocity());
+      SmartDashboard.putNumber("Intake2 Velocity", intake2Enc.getVelocity());
+  
+      SmartDashboard.putBoolean("LeftIntake Limit", leftLimit.isPressed());
+      SmartDashboard.putBoolean("RightIntake Limit", rightLimit.isPressed());
+      SmartDashboard.putBoolean("Has Gamepiece", getHasGamepiece());
+
+      SmartDashboard.putBoolean("Cone", GamePiece.getGamePiece() == GamePieceType.Cone);
+      SmartDashboard.putBoolean("Cube", GamePiece.getGamePiece() == GamePieceType.Cube);
+    }
+
+
     if(this.getHasGamepiece()){
       m_candle.setLEDs(0, 255, 0);
     }else{
@@ -170,9 +187,5 @@ public class Intake extends SubsystemBase {
         }
       }
     }
-
-    SmartDashboard.putBoolean("LeftIntake Limit", leftLimit.isPressed());
-    SmartDashboard.putBoolean("RightIntake Limit", rightLimit.isPressed());
-    SmartDashboard.putBoolean("Has Gamepiece", getHasGamepiece());
   }
 }

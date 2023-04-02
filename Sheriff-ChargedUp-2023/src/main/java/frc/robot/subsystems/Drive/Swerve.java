@@ -9,6 +9,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
+import java.sql.Driver;
+
 import javax.swing.GroupLayout.Alignment;
 
 import org.opencv.core.Mat;
@@ -23,8 +25,10 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -86,7 +90,14 @@ public class Swerve extends SubsystemBase {
     
             swerveOdometry.update(getYaw(), getModulePositions()); 
     
-            m_field.setRobotPose(swerveOdometry.getPoseMeters());
+            //m_field.setRobotPose(swerveOdometry.getPoseMeters());
+            Pose2d fieldRalativePos = getPose();
+            
+            if(DriverStation.getAlliance() == Alliance.Red)
+                m_field.setRobotPose(fieldRalativePos.relativeTo(Constants.RedOrigin));
+
+            if(DriverStation.getAlliance() == Alliance.Blue)
+                m_field.setRobotPose(fieldRalativePos.relativeTo(Constants.BlueOrigin));
     
             SmartDashboard.putData("Field Swerve Odom", m_field);
             if(Constants.tuningMode){
@@ -103,30 +114,61 @@ public class Swerve extends SubsystemBase {
             setModuleStates(swerveModuleStates);
         }
     
-        public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-            SwerveModuleState[] swerveModuleStates =
-            Constants.Swerve.swerveKinematics.toSwerveModuleStates(
-                    fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                        translation.getX(), 
-                                        translation.getY(), 
-                                        rotation, 
-                                        swerveOdometry.getPoseMeters().getRotation()
-                                    )
-                                    : new ChassisSpeeds(
-                                        translation.getX(), 
-                                        translation.getY(), 
-                                        rotation)
-                                    );
-            SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+        // public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+        //     SwerveModuleState[] swerveModuleStates =
+        //     Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+        //             fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+        //                                 translation.getX(), 
+        //                                 translation.getY(), 
+        //                                 rotation, 
+        //                                 swerveOdometry.getPoseMeters().getRotation()
+        //                             )
+        //                             : new ChassisSpeeds(
+        //                                 translation.getX(), 
+        //                                 translation.getY(), 
+        //                                 rotation)
+        //                             );
+        //     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
     
-            for(SwerveModule mod : mSwerveMods){
-                mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
-            }
+        //     for(SwerveModule mod : mSwerveMods){
+        //         mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
+        //     }
     
-            // SmartDashboard.putNumber("X Translation", translation.getX());
-            // SmartDashboard.putNumber("Y Translation", translation.getY());
-            // SmartDashboard.putNumber("Rotation Value", rotation);
-        }    
+        //     // SmartDashboard.putNumber("X Translation", translation.getX());
+        //     // SmartDashboard.putNumber("Y Translation", translation.getY());
+        //     // SmartDashboard.putNumber("Rotation Value", rotation);
+        // }    
+
+            /**
+     * Moves the swerve drive train, creates twist2d that accounts for the fact that positions are
+     * not updated continuously, (updated every .02 seconds.)
+     *
+     * @param translation The 2d translation in the X-Y plane
+     * @param rotation The amount of rotation in the Z axis
+     * @param fieldRelative Whether the movement is relative to the field or absolute
+     * @param isOpenLoop Open or closed loop system
+     */
+    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+
+        double dt = TimedRobot.kDefaultPeriod;
+
+        ChassisSpeeds chassisSpeeds = fieldRelative
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, swerveOdometry.getPoseMeters().getRotation())
+        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+
+        Pose2d robot_pose_vel = new Pose2d(chassisSpeeds.vxMetersPerSecond * dt, chassisSpeeds.vyMetersPerSecond * dt,
+            Rotation2d.fromRadians(chassisSpeeds.omegaRadiansPerSecond * dt));
+        Twist2d twist_vel = new Pose2d().log(robot_pose_vel);
+        ChassisSpeeds updated = new ChassisSpeeds(twist_vel.dx / dt, twist_vel.dy / dt, twist_vel.dtheta / dt);
+
+        SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(updated);
+
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+    
+        for(SwerveModule mod : mSwerveMods){
+            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
+        }
+    }
     
         public void stopDrive(){
             drive(new Translation2d(0, 0), 0, false, true);
@@ -198,6 +240,10 @@ public class Swerve extends SubsystemBase {
             }
         }
 
+        public void setSwervetoRightCAM(){
+            swerveOdometry.resetPosition(getYaw(), getModulePositions(), eyes.getRightCamPose());
+        }
+
         public Pose2d getNearestGridPose(){
             //Check the cameras to see where we are
             double currentY = this.getVisionPose().getY();
@@ -213,7 +259,7 @@ public class Swerve extends SubsystemBase {
                             closestY = Constants.Swerve.BLUEcubeYcoord[i];
                         }
                     }
-                    return new Pose2d(new Translation2d(1.85, closestY), Rotation2d.fromDegrees(180));
+                    return new Pose2d(new Translation2d(1.89, closestY), Rotation2d.fromDegrees(180));
                 }
                 
                 //Here we will write Red
@@ -224,7 +270,7 @@ public class Swerve extends SubsystemBase {
                             closestY = Constants.Swerve.REDcubeYcoord[i];
                         }
                     }
-                    return new Pose2d(new Translation2d(1.85, closestY), Rotation2d.fromDegrees(180));
+                    return new Pose2d(new Translation2d(1.89, closestY), Rotation2d.fromDegrees(180));
                 }           
             }
 
@@ -238,7 +284,7 @@ public class Swerve extends SubsystemBase {
                            closestY = Constants.Swerve.BLUEconeYcoord[i];
                        }
                    }
-                   return new Pose2d(new Translation2d(1.85, closestY), Rotation2d.fromDegrees(180));
+                   return new Pose2d(new Translation2d(1.89, closestY), Rotation2d.fromDegrees(180));
                }
                
                //Here we will write Red
@@ -249,7 +295,7 @@ public class Swerve extends SubsystemBase {
                            closestY = Constants.Swerve.REDconeYcoord[i];
                        }
                    }
-                   return new Pose2d(new Translation2d(1.85, closestY), Rotation2d.fromDegrees(180));
+                   return new Pose2d(new Translation2d(1.89, closestY), Rotation2d.fromDegrees(180));
                }     
             }
 

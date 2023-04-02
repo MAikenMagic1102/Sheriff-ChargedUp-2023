@@ -53,13 +53,13 @@ public class Arm extends SubsystemBase {
 
 
     //From Lower to Higher
-    lowerConfig.Slot0.kP = 220; // An error of 1 rotation = 200 amps
+    lowerConfig.Slot0.kP = 270; // An error of 1 rotation = 200 amps
     lowerConfig.Slot0.kI = 80; //
-    lowerConfig.Slot0.kD = 40; // A change of 1 rotation per second results in 40 amps output
+    lowerConfig.Slot0.kD = 50; // A change of 1 rotation per second results in 40 amps output
 
     // Peak output of 250 amps
-    lowerConfig.TorqueCurrent.PeakForwardTorqueCurrent = 250;
-    lowerConfig.TorqueCurrent.PeakReverseTorqueCurrent = 250;
+    lowerConfig.TorqueCurrent.PeakForwardTorqueCurrent = 300;
+    lowerConfig.TorqueCurrent.PeakReverseTorqueCurrent = 300;
 
     upperConfig.Feedback.SensorToMechanismRatio = Constants.Arm.upperArmRatio;
     upperConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -194,27 +194,28 @@ public class Arm extends SubsystemBase {
     return upperArm.getPosition().getValue();
   }
 
+  public boolean getUpperArmInitialized(){
+    return upperArmZeroed;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Upper Arm Init", upperArmZeroed);
-    SmartDashboard.putNumber("Upper Arm Holdpoint", upperArmHold);
-    SmartDashboard.putNumber("Lower Arm Holdpoint", lowerArmHold);
-
-    SmartDashboard.putNumber("Lower Arm Sensor POS", lowerArm.getPosition().getValue());
-    SmartDashboard.putNumber("Upper Arm Sensor POS", upperArm.getPosition().getValue());
-
-    SmartDashboard.putNumber("Lower Arm Current Draw", lowerArm.getTorqueCurrent().getValue());
-    SmartDashboard.putNumber("Upper Arm Current Draw", upperArm.getTorqueCurrent().getValue());
-    SmartDashboard.putNumber("Upper Arm Stator Current", upperArm.getStatorCurrent().getValue());
-
-    SmartDashboard.putBoolean("Cone", GamePiece.getGamePiece() == GamePieceType.Cone);
-    SmartDashboard.putBoolean("Cube", GamePiece.getGamePiece() == GamePieceType.Cube);
-    if(GamePiece.getGamePiece() != null){
-      SmartDashboard.putNumber("Gamepiece Ordinal", GamePiece.getGamePiece().ordinal());
-    }
-    if(isClosedLoop){
-      SmartDashboard.putNumber("Lower Arm Error", lowerArm.getClosedLoopError().getValue());
+    if(Constants.tuningMode){
+      SmartDashboard.putBoolean("Upper Arm Init", upperArmZeroed);
+      SmartDashboard.putNumber("Upper Arm Holdpoint", upperArmHold);
+      SmartDashboard.putNumber("Lower Arm Holdpoint", lowerArmHold);
+  
+      SmartDashboard.putNumber("Lower Arm Sensor POS", lowerArm.getPosition().getValue());
+      SmartDashboard.putNumber("Upper Arm Sensor POS", upperArm.getPosition().getValue());
+  
+      SmartDashboard.putNumber("Lower Arm Current Draw", lowerArm.getTorqueCurrent().getValue());
+      SmartDashboard.putNumber("Upper Arm Current Draw", upperArm.getTorqueCurrent().getValue());
+      SmartDashboard.putNumber("Upper Arm Stator Current", upperArm.getStatorCurrent().getValue());
+    
+      if(isClosedLoop){
+        SmartDashboard.putNumber("Lower Arm Error", lowerArm.getClosedLoopError().getValue());
+      }
     }
   }
 }
