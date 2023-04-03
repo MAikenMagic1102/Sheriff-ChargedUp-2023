@@ -259,7 +259,7 @@ public class Swerve extends SubsystemBase {
                             closestY = Constants.Swerve.BLUEcubeYcoord[i];
                         }
                     }
-                    return new Pose2d(new Translation2d(1.89, closestY), Rotation2d.fromDegrees(180));
+                    return new Pose2d(new Translation2d(1.87, closestY), Rotation2d.fromDegrees(180));
                 }
                 
                 //Here we will write Red
@@ -270,7 +270,7 @@ public class Swerve extends SubsystemBase {
                             closestY = Constants.Swerve.REDcubeYcoord[i];
                         }
                     }
-                    return new Pose2d(new Translation2d(1.89, closestY), Rotation2d.fromDegrees(180));
+                    return new Pose2d(new Translation2d(1.87, closestY), Rotation2d.fromDegrees(180));
                 }           
             }
 
@@ -284,7 +284,7 @@ public class Swerve extends SubsystemBase {
                            closestY = Constants.Swerve.BLUEconeYcoord[i];
                        }
                    }
-                   return new Pose2d(new Translation2d(1.89, closestY), Rotation2d.fromDegrees(180));
+                   return new Pose2d(new Translation2d(1.8, closestY), Rotation2d.fromDegrees(180));
                }
                
                //Here we will write Red
@@ -295,7 +295,7 @@ public class Swerve extends SubsystemBase {
                            closestY = Constants.Swerve.REDconeYcoord[i];
                        }
                    }
-                   return new Pose2d(new Translation2d(1.89, closestY), Rotation2d.fromDegrees(180));
+                   return new Pose2d(new Translation2d(1.8, closestY), Rotation2d.fromDegrees(180));
                }     
             }
 

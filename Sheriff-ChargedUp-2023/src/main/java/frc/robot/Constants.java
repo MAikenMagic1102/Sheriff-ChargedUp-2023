@@ -20,7 +20,7 @@ import frc.lib.util.Gains;
 public final class Constants {
     public static final double stickDeadband = 0.1;
     public static final int CANdleID = 31;
-    public static final boolean tuningMode = true;
+    public static final boolean tuningMode = false;
 
     public static final long threadsleep = 20;
 
@@ -47,10 +47,10 @@ public final class Constants {
 
         public static Map<Node, ArmSetpoint> ArmMap = new HashMap<Node, ArmSetpoint>();
         static { //Gamepiece 1 is Cone, Gamepiece 2 is Cube
-            ArmMap.put(new Node(1, 1), new ArmSetpoint(0.85, 1.5));
+            ArmMap.put(new Node(1, 1), new ArmSetpoint(0.93, 1.4));
             ArmMap.put(new Node(2, 1), new ArmSetpoint(2.5, 1.7));
             ArmMap.put(new Node(3, 1), new ArmSetpoint(2.95, 4.8));
-            ArmMap.put(new Node(4, 1), new ArmSetpoint(2.7, 0.6));
+            ArmMap.put(new Node(4, 1), new ArmSetpoint(2.7, 0.75));
             ArmMap.put(new Node(1, 2), new ArmSetpoint(0.8, 0.6));
             ArmMap.put(new Node(2, 2), new ArmSetpoint(2.25, 1.5));
             ArmMap.put(new Node(3, 2), new ArmSetpoint(2.7, 4.4));
@@ -59,7 +59,7 @@ public final class Constants {
 
         public static final double RETRACT = 0.1;
         public static final ArmSetpoint STOW = new ArmSetpoint(0.62, 0.1); 
-        public static final ArmSetpoint FLOORLOAD = new ArmSetpoint(0.74, 1.95); 
+        public static final ArmSetpoint FLOORLOAD = new ArmSetpoint(0.74, 2.0); 
         public static final ArmSetpoint SUBSTATION = new ArmSetpoint(2.45, 0.3);  
 
     }

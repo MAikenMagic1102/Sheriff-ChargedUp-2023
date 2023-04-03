@@ -88,8 +88,8 @@ public class Intake extends SubsystemBase {
   public void setholdPosition(){
     if(keepHold){
         if(!leftLimit.isPressed() && GamePiece.getGamePiece() == GamePieceType.Cube){
-          PIDIntake1.setReference(0.02, ControlType.kDutyCycle);
-          PIDIntake2.setReference(0.02, ControlType.kDutyCycle);
+          PIDIntake1.setReference(0.03, ControlType.kDutyCycle);
+          PIDIntake2.setReference(0.03, ControlType.kDutyCycle);
         }else{
           if(GamePiece.getGamePiece() == GamePieceType.Cone){
             PIDIntake1.setReference(0.7, ControlType.kDutyCycle);
@@ -128,9 +128,9 @@ public class Intake extends SubsystemBase {
   }
 
   public void intakeOutFast(){
-    PIDIntake1.setReference(-0.35, ControlType.kDutyCycle);
-    PIDIntake2.setReference(-0.35, ControlType.kDutyCycle);
-    hRollerIntake.set(-0.3);
+    PIDIntake1.setReference(-0.4, ControlType.kDutyCycle);
+    PIDIntake2.setReference(-0.4, ControlType.kDutyCycle);
+    hRollerIntake.set(-0.2);
     keepHold = false;
   }
 

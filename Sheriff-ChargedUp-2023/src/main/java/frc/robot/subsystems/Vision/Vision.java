@@ -32,7 +32,7 @@ public class Vision {
   //increase values to trust the drivetrain less (x,y,theta)
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1,0.1, Units.degreesToRadians(0.1));
 
-  private static final Vector<N3> visionStdDevs = VecBuilder.fill(0.9,0.9, 0.9);
+  private static final Vector<N3> visionStdDevs = VecBuilder.fill(0.9,0.9, Units.degreesToRadians(10));
 
   private final SwerveDrivePoseEstimator poseEst;
 

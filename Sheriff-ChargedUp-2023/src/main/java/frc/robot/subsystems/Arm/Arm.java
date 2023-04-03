@@ -53,13 +53,13 @@ public class Arm extends SubsystemBase {
 
 
     //From Lower to Higher
-    lowerConfig.Slot0.kP = 270; // An error of 1 rotation = 200 amps
-    lowerConfig.Slot0.kI = 80; //
-    lowerConfig.Slot0.kD = 50; // A change of 1 rotation per second results in 40 amps output
+    lowerConfig.Slot0.kP = 420; // An error of 1 rotation = 200 amps
+    lowerConfig.Slot0.kI = 240; //
+    lowerConfig.Slot0.kD = 80; // A change of 1 rotation per second results in 40 amps output
 
     // Peak output of 250 amps
-    lowerConfig.TorqueCurrent.PeakForwardTorqueCurrent = 300;
-    lowerConfig.TorqueCurrent.PeakReverseTorqueCurrent = 300;
+    lowerConfig.TorqueCurrent.PeakForwardTorqueCurrent = 500;
+    lowerConfig.TorqueCurrent.PeakReverseTorqueCurrent = -500;
 
     upperConfig.Feedback.SensorToMechanismRatio = Constants.Arm.upperArmRatio;
     upperConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
