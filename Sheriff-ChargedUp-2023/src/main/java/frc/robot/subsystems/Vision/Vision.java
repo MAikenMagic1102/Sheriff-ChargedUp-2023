@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.Vision;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drive.Swerve;
+import frc.robot.subsystems.Vision.LimelightHelpers.LimelightTarget_Fiducial;
 
 
 public class Vision {
@@ -32,7 +34,7 @@ public class Vision {
   //increase values to trust the drivetrain less (x,y,theta)
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1,0.1, Units.degreesToRadians(0.1));
 
-  private static final Vector<N3> visionStdDevs = VecBuilder.fill(0.9,0.9, Units.degreesToRadians(10));
+  private static final Vector<N3> visionStdDevs = VecBuilder.fill(0.9,0.9, 100000);
 
   private final SwerveDrivePoseEstimator poseEst;
 
@@ -40,7 +42,7 @@ public class Vision {
   private final Field2d leftCam;
   private final Field2d rightCam;
 
-  private final Lock lock = new ReentrantLock();
+  private AtomicReference<Pose2d> APose = new AtomicReference<Pose2d>(new Pose2d());
   
 
   /** Creates a new Vision. */
@@ -91,15 +93,19 @@ public class Vision {
         double rightTimestamp = Timer.getFPGATimestamp() - (blueRightResult.latency_capture/1000.0) - (blueRightResult.latency_pipeline/1000.0);
 
         if(blueLeftResult.targets_Fiducials.length > 0){
-          leftCam.setRobotPose(blueLeftBotPose.relativeTo(Constants.BlueOrigin));
-          poseEst.addVisionMeasurement(blueLeftBotPose, leftTimestamp);
-          SmartDashboard.putNumber("Left Timestamp", leftTimestamp);
+          if(getAvgTA(blueLeftResult.targets_Fiducials) > 0.005){
+            leftCam.setRobotPose(blueLeftBotPose.relativeTo(Constants.BlueOrigin));
+            poseEst.addVisionMeasurement(blueLeftBotPose, leftTimestamp);
+            SmartDashboard.putNumber("Left Timestamp", leftTimestamp);
+          }
         }
         
         if(blueRightResult.targets_Fiducials.length > 0){
-          rightCam.setRobotPose(blueRightBotPose.relativeTo(Constants.BlueOrigin));
-          poseEst.addVisionMeasurement(blueRightBotPose, rightTimestamp);
-          SmartDashboard.putNumber("Right Timestamp", rightTimestamp);
+          if(getAvgTA(blueRightResult.targets_Fiducials) > 0.005){
+            rightCam.setRobotPose(blueRightBotPose.relativeTo(Constants.BlueOrigin));
+            poseEst.addVisionMeasurement(blueRightBotPose, rightTimestamp);
+            SmartDashboard.putNumber("Right Timestamp", rightTimestamp);
+          }
         }
 
         field2d.setRobotPose(getCurrentPose().relativeTo(Constants.BlueOrigin));
@@ -116,21 +122,26 @@ public class Vision {
         double rightTimestamp = Timer.getFPGATimestamp() - (redRightResult.latency_capture/1000.0) - (redRightResult.latency_pipeline/1000.0);
 
         if(redLeftResult.targets_Fiducials.length > 0){
-          leftCam.setRobotPose(redLeftBotPose.relativeTo(Constants.RedOrigin));
-          poseEst.addVisionMeasurement(redLeftBotPose, leftTimestamp);
-          SmartDashboard.putNumber("Left Timestamp", leftTimestamp);
+          if(getAvgTA(redLeftResult.targets_Fiducials) > 0.005){
+            leftCam.setRobotPose(redLeftBotPose.relativeTo(Constants.RedOrigin));
+            poseEst.addVisionMeasurement(redLeftBotPose, leftTimestamp);
+            SmartDashboard.putNumber("Left Timestamp", leftTimestamp);
+          }
         }
         
         if(redRightResult.targets_Fiducials.length > 0){
-          rightCam.setRobotPose(redRightBotPose.relativeTo(Constants.RedOrigin));
-          poseEst.addVisionMeasurement(redRightBotPose, rightTimestamp);
-          SmartDashboard.putNumber("Right Timestamp", rightTimestamp);
+          if(getAvgTA(redRightResult.targets_Fiducials) > 0.005){
+            rightCam.setRobotPose(redRightBotPose.relativeTo(Constants.RedOrigin));
+            poseEst.addVisionMeasurement(redRightBotPose, rightTimestamp);
+            SmartDashboard.putNumber("Right Timestamp", rightTimestamp);
+          }
         }
 
         field2d.setRobotPose(getCurrentPose().relativeTo(Constants.RedOrigin));
     }
 
     poseEst.update(swerve.getYaw(), swerve.getModulePositions());
+    APose.set(poseEst.getEstimatedPosition());
 
     SmartDashboard.putData("Field Pose Est", field2d);
     SmartDashboard.putData("Left CAM Field", leftCam);
@@ -138,7 +149,15 @@ public class Vision {
   }
 
   public Pose2d getCurrentPose(){
-    return poseEst.getEstimatedPosition();
+    return APose.get();
+  }
+
+  public double getAvgTA(LimelightTarget_Fiducial[] fiducials){
+    double sumTA = 0;
+    for(int i = 0; i < fiducials.length; i++){
+      sumTA += fiducials[i].ta;
+    }
+    return sumTA / fiducials.length;
   }
 
   public void setCurrentPose(Pose2d newPose){
