@@ -84,6 +84,8 @@ public class RobotContainer {
         m_autoChooser.addOption("RED 1 Cube AqCube Balance", new AutoRed1CubeHalfBalance(s_Swerve, arm, intake, cubekicker));
         m_autoChooser.addOption("RED 3 Cube", new AutoRed3Cube(s_Swerve, arm, intake, cubekicker));
         m_autoChooser.addOption("BLUE 3 Cube", new AutoBlue3Cube(s_Swerve, arm, intake, cubekicker));
+        m_autoChooser.addOption("BLUE BUMP 2 Cube", new BlueBump2(s_Swerve, arm, intake, cubekicker));
+        m_autoChooser.addOption("RED BUMP 2 Cube", new RedBump2(s_Swerve, arm, intake, cubekicker));
         m_autoChooser.addOption("No Auto", null);
         SmartDashboard.putData("Auto", m_autoChooser);
 
@@ -120,7 +122,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.rightTrigger().whileTrue(new ClosestScore(s_Swerve, arm));
-        driver.leftTrigger().whileTrue(new PIDdriveToSubstation(s_Swerve));
+        driver.leftTrigger().whileTrue(new ClosestSubstation(s_Swerve, arm));
 
         driver.povUp().onTrue((new InstantCommand(() -> s_Swerve.zeroGyro())));
         driver.start().whileTrue(Commands.run(s_Swerve::AutoBalance, s_Swerve).andThen(s_Swerve::stopDrive, s_Swerve));

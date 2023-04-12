@@ -50,11 +50,11 @@ public final class Constants {
             ArmMap.put(new Node(1, 1), new ArmSetpoint(0.93, 1.4));
             ArmMap.put(new Node(2, 1), new ArmSetpoint(2.5, 1.7));
             ArmMap.put(new Node(3, 1), new ArmSetpoint(2.95, 4.8));
-            ArmMap.put(new Node(4, 1), new ArmSetpoint(2.7, 0.75));
+            ArmMap.put(new Node(4, 1), new ArmSetpoint(2.7, 0.8));
             ArmMap.put(new Node(1, 2), new ArmSetpoint(0.8, 0.6));
-            ArmMap.put(new Node(2, 2), new ArmSetpoint(2.25, 1.5));
+            ArmMap.put(new Node(2, 2), new ArmSetpoint(2.25, 1.25));
             ArmMap.put(new Node(3, 2), new ArmSetpoint(2.7, 4.4));
-            ArmMap.put(new Node(4, 2), new ArmSetpoint(2.45, 0.6));
+            ArmMap.put(new Node(4, 2), new ArmSetpoint(2.45, 1.0));
         }
 
         public static final double RETRACT = 0.1;
@@ -75,13 +75,16 @@ public final class Constants {
     }
 
     public static final class Swerve {
-        public static final double[] BLUEcubeYcoord = {1.2, 2.75, 4.31};
-        public static final double[] BLUEconeYcoord = {0.55, 1.65, 2.25, 3.3, 3.95, 5};
-        public static final double[] REDcubeYcoord = {3.5, 5.1, 7.1};
-        public static final double[] REDconeYcoord = {3.00, 4.2, 4.6, 5.65, 6.1, 7.6};
+        public static final double[] BLUEcubeYcoord = {1.06, 2.76, 4.45};
+        public static final double[] BLUEconeYcoord = {0.53, 1.62, 2.22, 3.35, 3.87, 4.98};
+        public static final double[] REDcubeYcoord = {3.57, 5.27, 6.94};
+        public static final double[] REDconeYcoord = {3.02, 4.15, 4.71, 5.83, 6.41, 7.52};
 
-        public static final Pose2d REDsubStation = new Pose2d(new Translation2d(15.60, 1.95), Rotation2d.fromDegrees(0));
-        public static final Pose2d BLUEsubStation = new Pose2d(new Translation2d(15.60, 6.17), Rotation2d.fromDegrees(0));
+        public static final double[] REDsubstationcoord = {1.9, 0.52};
+        public static final double[] BLUEsubstationcoord = {6.2, 7.45};
+        
+        public static final Pose2d REDsubStation = new Pose2d(new Translation2d(15.4, 1.8), Rotation2d.fromDegrees(0));
+        public static final Pose2d BLUEsubStation = new Pose2d(new Translation2d(15.4, 6.2), Rotation2d.fromDegrees(0));
 
         public static final int pigeonID = 9;
         public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
@@ -151,7 +154,7 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4.5; //TODO: This must be tuned to specific robot
+        public static final double maxSpeed = 4.8; //TODO: This must be tuned to specific robot
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
 

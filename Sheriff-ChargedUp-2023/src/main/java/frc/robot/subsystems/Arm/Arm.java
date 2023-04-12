@@ -69,14 +69,14 @@ public class Arm extends SubsystemBase {
     lowerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.06;
 
     //From Lower to Higher
-    upperConfig.Slot0.kP = 220; // An error of 1 rotation = 80 amps
+    upperConfig.Slot0.kP = 260; // An error of 1 rotation = 80 amps
     upperConfig.Slot0.kI = 80;
     upperConfig.Slot0.kD = 40; // A change of 1 rotation per second results in 2 amps output
 
 
     // Peak output of 130 amps
-    upperConfig.TorqueCurrent.PeakForwardTorqueCurrent = 250;
-    upperConfig.TorqueCurrent.PeakReverseTorqueCurrent = 250;
+    upperConfig.TorqueCurrent.PeakForwardTorqueCurrent = 400;
+    upperConfig.TorqueCurrent.PeakReverseTorqueCurrent = -400;
 
     var defaultConfig = new TalonFXConfiguration();
     TalonFXConfigurator lowerCfg = lowerArm.getConfigurator();
@@ -114,7 +114,7 @@ public class Arm extends SubsystemBase {
     isClosedLoop = true;
 
 
-      PositionTorqueCurrentFOC m_torquePosition = new PositionTorqueCurrentFOC(setPoint, 4, 0, BrakeMode);
+      PositionTorqueCurrentFOC m_torquePosition = new PositionTorqueCurrentFOC(setPoint, 20, 0, BrakeMode);
       lowerArm.setControl(m_torquePosition);
 
     // if(lowerArmHold > setPoint){

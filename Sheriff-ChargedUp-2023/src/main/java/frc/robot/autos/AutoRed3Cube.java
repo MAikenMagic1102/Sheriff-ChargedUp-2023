@@ -56,10 +56,10 @@ public class AutoRed3Cube extends SequentialCommandGroup {
                         new WaitCommand(0.3).alongWith(new HomeArm(a_Arm)),
                         s_Swerve.followTrajectoryCommand(test, true).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD).alongWith(new InstantCommand(() -> lilKick.home()).alongWith(new IntakeIn(i_Intake)))),
                         s_Swerve.followTrajectoryCommand(test2, false).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.SUBSTATION)),
-                        new ArmToNode(a_Arm, 2).alongWith(new ClosestScore(s_Swerve, a_Arm)),
+                        new ArmToNode(a_Arm, 2),
                         new ScoreAuto(a_Arm, i_Intake),
                         s_Swerve.followTrajectoryCommand(test3, false).alongWith(new IntakeIn(i_Intake).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD))),
-                        s_Swerve.followTrajectoryCommand(test4, false).alongWith(new IntakeIn(i_Intake).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.SUBSTATION))),
+                        s_Swerve.followTrajectoryCommand(test4, false).alongWith(new IntakeIn(i_Intake).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.STOW))),
                         new ArmToNode(a_Arm, 1).alongWith(new ClosestScore(s_Swerve, a_Arm)),
                         new ScoreAuto(a_Arm, i_Intake),
                         new ArmToSetpoint(a_Arm, Constants.Arm.STOW)

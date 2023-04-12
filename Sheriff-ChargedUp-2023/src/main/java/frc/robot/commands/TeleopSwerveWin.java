@@ -101,10 +101,15 @@ public class TeleopSwerveWin extends CommandBase {
         }
 
         if(m_quarterSpeed.getAsBoolean()){
-            xVal = xVal*0.25;
-            yVal =yVal*0.25;
+            // xVal = xVal*0.25;
+            // yVal =yVal*0.25;
+            // if(!rotateWithButton){
+            //     rotationVal = rotationVal *0.25;
+            // }
+            xVal = xVal*0.5;
+            yVal =yVal*0.5;
             if(!rotateWithButton){
-                rotationVal = rotationVal *0.25;
+                rotationVal = rotationVal *0.5;
             }
         }
         else if(m_halfSpeed.getAsBoolean()){

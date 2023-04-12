@@ -4,6 +4,8 @@ import frc.lib.util.GamePiece;
 import frc.robot.Constants;
 import frc.robot.commands.ArmToNode;
 import frc.robot.commands.ArmToSetpoint;
+import frc.robot.commands.ClosestScore;
+import frc.robot.commands.HomeArm;
 import frc.robot.commands.IntakeIn;
 import frc.robot.commands.Score;
 import frc.robot.subsystems.CubeKicker;
@@ -48,14 +50,11 @@ public class AutoRed2CubesBalance extends SequentialCommandGroup {
                 new ParallelCommandGroup(
                     new SequentialCommandGroup(
                         new InstantCommand(() -> lilKick.fire()),
-                        new InstantCommand(() -> a_Arm.initArm()),
-                        new WaitCommand(0.3),
-                        s_Swerve.followTrajectoryCommand(test, true).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD).alongWith(new IntakeIn(i_Intake).alongWith(new InstantCommand(() -> lilKick.home())))),
-                        s_Swerve.followTrajectoryCommand(testAq, false),
+                        new WaitCommand(0.3).alongWith(new HomeArm(a_Arm)),
+                        s_Swerve.followTrajectoryCommand(test, true).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.FLOORLOAD).alongWith(new InstantCommand(() -> lilKick.home()).alongWith(new IntakeIn(i_Intake).withTimeout(4.5)))),
                         s_Swerve.followTrajectoryCommand(test2, false).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.STOW)),
-                        new ArmToNode(a_Arm, 1),
+                        new ArmToNode(a_Arm, 1).alongWith(new ClosestScore(s_Swerve, a_Arm)),
                         new Score(a_Arm, i_Intake),
-                        new ArmToSetpoint(a_Arm, Constants.Arm.STOW),
                         s_Swerve.followTrajectoryCommand(test3, false).alongWith(new ArmToSetpoint(a_Arm, Constants.Arm.STOW)),
                         new RepeatCommand(new InstantCommand(() -> s_Swerve.AutoBalance()))                        
                     ))

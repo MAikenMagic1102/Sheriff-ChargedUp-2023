@@ -141,7 +141,7 @@ public class Vision {
     }
 
     poseEst.update(swerve.getYaw(), swerve.getModulePositions());
-    APose.set(poseEst.getEstimatedPosition());
+    //APose.set(poseEst.getEstimatedPosition());
 
     SmartDashboard.putData("Field Pose Est", field2d);
     SmartDashboard.putData("Left CAM Field", leftCam);
@@ -149,7 +149,7 @@ public class Vision {
   }
 
   public Pose2d getCurrentPose(){
-    return APose.get();
+    return poseEst.getEstimatedPosition();
   }
 
   public double getAvgTA(LimelightTarget_Fiducial[] fiducials){

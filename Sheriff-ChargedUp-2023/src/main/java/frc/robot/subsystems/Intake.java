@@ -180,7 +180,7 @@ public class Intake extends SubsystemBase {
       m_candle.setLEDs(0, 255, 0);
     }else{
       if(GamePiece.getGamePiece() == GamePieceType.Cone){
-        m_candle.setLEDs(255, 255, 0);
+        m_candle.setLEDs(255, 80, 0);
       }else{
         if(GamePiece.getGamePiece() == GamePieceType.Cube){
           m_candle.setLEDs(128, 0, 128);

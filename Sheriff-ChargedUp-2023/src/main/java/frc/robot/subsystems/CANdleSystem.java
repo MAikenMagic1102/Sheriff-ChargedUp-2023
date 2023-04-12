@@ -138,7 +138,7 @@ public class CANdleSystem extends SubsystemBase {
         //                       (int)(joystick.getRightTriggerAxis() * 255), 
         //                       (int)(joystick.getLeftX() * 255));
         // } else {
-        m_candle.animate(new RainbowAnimation(1, 0.1, LedCount));
+        //m_candle.animate(new RainbowAnimation(1, 0.1, LedCount));
         //}
         //m_candle.modulateVBatOutput(joystick.getRightY());
     }
